@@ -702,6 +702,20 @@
 
   // ---- Log sheet logic ----
   let focusVal = null, beatVal = null, intentVal = null;
+let qualityVal = null, timeVal = null;
+  document.querySelectorAll('#qualityRow .intent-opt').forEach(c=>{
+  c.addEventListener('click', ()=>{
+    document.querySelectorAll('#qualityRow .intent-opt').forEach(x=>x.classList.remove('sel'));
+    c.classList.add('sel');
+    qualityVal = +c.dataset.v;
+    validateForm();
+  });
+});
+  document.querySelectorAll('#drillChips .chip').forEach(c=>{
+  c.addEventListener('click', ()=>{
+    $('noteInput').value = c.dataset.v;
+  });
+});
 
   function resetLogForm(){
     focusVal = null; beatVal = null; intentVal = null;
