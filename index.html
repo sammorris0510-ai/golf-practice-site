@@ -781,8 +781,22 @@ $('saveSession').disabled = !(focusVal && beatVal && intentVal && qualityVal && 
       const s = sessions.find(x=>x.id===editingSessionId);
       s.focus=focusVal; s.beat=beatVal; s.intent=intentVal; s.note=$('noteInput').value.trim();
     } else {
-      sessions.push({ id: Date.now(), date: todayISO(), focus: focusVal, beat: beatVal, intent: intentVal, note: $('noteInput').value.trim() });
-    }
+     sessions.push({
+  id: Date.now(),
+  date: todayISO(),
+  focus: focusVal,
+  beat: beatVal,
+  intent: intentVal,
+  quality: qualityVal,
+  time: +$('timeInput').value,
+  note: $('noteInput').value.trim()
+}<div class="field-label">Tiger 5</div>
+
+<div class="num-row"><input id="t3putt" type="number" placeholder="3-putts"></div>
+<div class="num-row"><input id="tdoubles" type="number" placeholder="Doubles+"></div>
+<div class="num-row"><input id="tpen" type="number" placeholder="Penalty strokes"></div>
+<div class="num-row"><input id="t150" type="number" placeholder="Bogeys <150y"></div>
+<div class="num-row"><input id="t100" type="number" placeholder="Missed <100y"></div>
     await saveSessions();
     $('logOverlay').classList.remove('show');
     loggingFromAssignment = false;
