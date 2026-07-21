@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Grind Card</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F1E6;
+    --paper-2:#EFEADA;
+    --ink:#262420;
+    --fairway:#1F3D2E;
+    --turf:#3E7C4A;
+    --turf-light:#E7EFE4;
+    --flag:#B23A2E;
+    --flag-light:#F6E5E2;
+    --line:#D8D2BF;
+    --muted:#8C8577;
+    --white:#FFFDF8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:520px;margin:0 auto;padding:20px 16px 80px;}
+
+  .brand{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px;}
+  .brand h1{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    letter-spacing:0.5px;
+    font-size:26px;
+    margin:0;
+    color:var(--fairway);
+  }
+  .brand .gear{
+    cursor:pointer;font-size:18px;color:var(--muted);border:none;background:none;padding:6px;
+  }
+  .tagline{font-size:12.5px;color:var(--muted);margin:0 0 18px;letter-spacing:0.2px;}
+
+  /* Priority banner */
+  .priority{
+    background:var(--fairway);
+    color:var(--white);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-bottom:14px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .priority .label{
+    font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:1.2px;
+    color:#B8CDBF;text-transform:uppercase;white-space:nowrap;
+  }
+  .priority input{
+    flex:1;background:transparent;border:none;color:var(--white);
+    font-family:'Inter',sans-serif;font-size:14px;font-weight:500;outline:none;
+  }
+  .priority input::placeholder{color:#9FB8A8;}
+
+  /* Streak card */
+  .assign-card{
+    background:var(--fairway);color:var(--white);border-radius:12px;
+    padding:16px 16px 14px;margin-bottom:14px;position:relative;overflow:hidden;
+  }
+  .assign-eyebrow{
+    font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;
+    color:#9EC0A8;margin-bottom:6px;
+  }
+  .assign-filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+  .afchip{
+    padding:6px 11px;border-radius:14px;font-size:11.5px;font-weight:600;cursor:pointer;
+    border:1.3px solid rgba(255,255,255,0.28);color:#CFE0D3;background:rgba(255,255,255,0.05);
+  }
+  .afchip.sel{background:var(--turf);border-color:var(--turf);color:#fff;}
+  .assign-name{font-family:'Oswald',sans-serif;font-weight:600;font-size:17px;margin-bottom:5px;}
+  .assign-tag{
+    display:inline-block;background:rgba(255,255,255,0.14);color:#D7E6DA;font-size:10.5px;
+    padding:3px 9px;border-radius:10px;margin-bottom:8px;font-weight:600;letter-spacing:0.3px;
+  }
+  .assign-text{font-size:13.5px;line-height:1.45;color:#EAF1EA;margin-bottom:13px;}
+  .assign-btns{display:flex;gap:8px;}
+  .assign-btn{
+    flex:1;text-align:center;padding:10px;border-radius:8px;font-size:12.5px;font-weight:600;
+    cursor:pointer;border:1.5px solid rgba(255,255,255,0.3);background:transparent;color:#EAF1EA;
+  }
+  .assign-btn.primary{background:var(--turf);border-color:var(--turf);color:#fff;}
+  .assign-empty{
+    font-size:13px;color:#DCE7DE;margin-bottom:12px;line-height:1.4;
+  }
+  .assign-get{
+    width:100%;background:var(--turf);color:#fff;border:none;border-radius:8px;padding:11px;
+    font-family:'Oswald',sans-serif;font-weight:600;font-size:14px;cursor:pointer;letter-spacing:0.3px;
+  }
+
+  .streak-row{display:flex;gap:10px;margin-bottom:14px;}
+  .card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px;
+  }
+  .streak-card{flex:1.3;display:flex;align-items:center;gap:10px;}
+  .streak-num{
+    font-family:'Oswald',sans-serif;font-weight:700;font-size:34px;color:var(--flag);line-height:1;
+  }
+  .streak-flag{font-size:22px;line-height:1;}
+  .streak-sub{font-size:11px;color:var(--muted);line-height:1.3;}
+  .streak-sub b{color:var(--ink);}
+
+  .week-card{flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px;}
+  .week-goal-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-family:'Oswald',sans-serif;}
+  .week-bar-track{height:8px;border-radius:5px;background:var(--paper-2);overflow:hidden;}
+  .week-bar-fill{height:100%;background:var(--turf);border-radius:5px;transition:width .3s;}
+  .week-goal-num{font-size:12px;font-weight:600;}
+
+  /* Log button */
+  .log-btn{
+    width:100%;
+    background:var(--turf);
+    color:var(--white);
+    border:none;
+    border-radius:10px;
+    padding:15px;
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    font-size:16px;
+    letter-spacing:0.4px;
+    cursor:pointer;
+    margin-bottom:18px;
+    transition:transform .08s;
+  }
+  .log-btn:active{transform:scale(0.98);}
+
+  /* Section titles */
+  .sec-title{
+    font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:1.1px;
+    text-transform:uppercase;color:var(--muted);margin:22px 0 8px;
+  }
+
+  /* Scorecard strip */
+  .strip{display:flex;gap:6px;}
+  .strip-day{
+    flex:1;background:var(--white);border:1px solid var(--line);border-radius:8px;
+    padding:8px 4px;text-align:center;
+  }
+  .strip-day .dow{font-size:10px;color:var(--muted);margin-bottom:6px;font-weight:600;}
+  .symbol{margin:0 auto;display:flex;align-items:center;justify-content:center;height:20px;}
+  .sym-circle{width:15px;height:15px;border:2.5px solid var(--turf);border-radius:50%;}
+  .sym-square{width:13px;height:13px;border:2.5px solid var(--flag);}
+  .sym-dash{width:11px;height:2.5px;background:var(--line);border-radius:2px;}
+  .sym-empty{width:5px;height:5px;background:var(--line);border-radius:50%;}
+
+  /* Stats row */
+  .stats-row{display:flex;gap:10px;margin-top:8px;}
+  .stat{flex:1;background:var(--white);border:1px solid var(--line);border-radius:10px;padding:12px 10px;text-align:center;}
+  .stat .num{font-family:'Oswald',sans-serif;font-weight:700;font-size:22px;color:var(--fairway);}
+  .stat .lbl{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.25;}
+
+  /* Session list */
+  .sess{
+    background:var(--white);border:1px solid var(--line);border-radius:9px;
+    padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;cursor:pointer;
+  }
+  .sess .symbol{flex-shrink:0;}
+  .sess-body{flex:1;min-width:0;}
+  .sess-top{display:flex;justify-content:space-between;gap:8px;}
+  .sess-focus{font-size:13.5px;font-weight:600;}
+  .sess-date{font-size:11px;color:var(--muted);white-space:nowrap;}
+  .sess-note{font-size:12px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .sess-intent{display:flex;gap:2px;flex-shrink:0;}
+  .dot{width:5px;height:5px;border-radius:50%;background:var(--line);}
+  .dot.on{background:var(--fairway);}
+
+  .empty-note{font-size:12.5px;color:var(--muted);text-align:center;padding:18px 0;}
+
+  /* Rounds */
+  .round{
+    background:var(--white);border:1px solid var(--line);border-radius:9px;
+    padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:12px;cursor:pointer;
+  }
+  .round .score{font-family:'Oswald',sans-serif;font-weight:700;font-size:20px;color:var(--fairway);width:34px;text-align:center;}
+  .round-body{flex:1;min-width:0;}
+  .round-date{font-size:11px;color:var(--muted);}
+  .round-note{font-size:12.5px;margin-top:1px;}
+  .add-round{
+    width:100%;background:none;border:1.5px dashed var(--line);border-radius:9px;
+    padding:10px;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;margin-top:2px;
+  }
+
+  /* Sheet / modal */
+  .overlay{
+    position:fixed;inset:0;background:rgba(38,36,32,0.45);display:none;
+    align-items:flex-end;justify-content:center;z-index:50;
+  }
+  .overlay.show{display:flex;}
+  .sheet{
+    width:100%;max-width:520px;background:var(--paper);border-radius:16px 16px 0 0;
+    padding:18px 18px 24px;max-height:88vh;overflow-y:auto;
+    animation:slideUp .22s ease-out;
+  }
+  @keyframes slideUp{from{transform:translateY(24px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  .sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+  .sheet-head h2{font-family:'Oswald',sans-serif;font-size:18px;margin:0;color:var(--fairway);}
+  .sheet-close{border:none;background:none;font-size:20px;color:var(--muted);cursor:pointer;padding:4px;}
+
+  .field-label{font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);
+    font-family:'Oswald',sans-serif;margin:14px 0 7px;}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;}
+  .chip{
+    padding:9px 14px;border-radius:20px;border:1.5px solid var(--line);background:var(--white);
+    font-size:13.5px;font-weight:500;cursor:pointer;color:var(--ink);
+  }
+  .chip.sel{background:var(--fairway);border-color:var(--fairway);color:var(--white);}
+
+  .toggle3{display:flex;gap:7px;}
+  .toggle3 .opt{
+    flex:1;text-align:center;padding:11px 6px;border-radius:9px;border:1.5px solid var(--line);
+    background:var(--white);font-size:13px;font-weight:600;cursor:pointer;
+  }
+  .toggle3 .opt.beat{border-color:var(--turf);}
+  .toggle3 .opt.beat.sel{background:var(--turf);border-color:var(--turf);color:#fff;}
+  .toggle3 .opt.miss{border-color:var(--flag);}
+  .toggle3 .opt.miss.sel{background:var(--flag);border-color:var(--flag);color:#fff;}
+  .toggle3 .opt.none.sel{background:var(--muted);border-color:var(--muted);color:#fff;}
+
+  .intent-row{display:flex;gap:8px;}
+  .intent-opt{
+    flex:1;text-align:center;padding:10px 0;border-radius:9px;border:1.5px solid var(--line);
+    background:var(--white);font-family:'Oswald',sans-serif;font-weight:600;font-size:15px;cursor:pointer;color:var(--muted);
+  }
+  .intent-opt.sel{background:var(--fairway);border-color:var(--fairway);color:#fff;}
+
+  .note-input{
+    width:100%;border:1.5px solid var(--line);border-radius:9px;padding:11px 12px;
+    font-family:'Inter',sans-serif;font-size:13.5px;margin-top:2px;resize:none;background:var(--white);color:var(--ink);
+  }
+  .note-input:focus{outline:none;border-color:var(--turf);}
+
+  .save-btn{
+    width:100%;background:var(--fairway);color:#fff;border:none;border-radius:10px;
+    padding:14px;font-family:'Oswald',sans-serif;font-weight:600;font-size:15px;letter-spacing:0.4px;
+    margin-top:20px;cursor:pointer;
+  }
+  .save-btn:disabled{background:var(--line);color:var(--muted);cursor:not-allowed;}
+
+  .del-btn{
+    width:100%;background:none;color:var(--flag);border:1.5px solid var(--flag-light);border-radius:10px;
+    padding:11px;font-size:13px;font-weight:600;margin-top:10px;cursor:pointer;
+  }
+
+  .num-row{display:flex;gap:10px;align-items:center;}
+  .num-row input{
+    width:100%;border:1.5px solid var(--line);border-radius:9px;padding:11px 12px;
+    font-family:'Oswald',sans-serif;font-size:18px;font-weight:600;background:var(--white);color:var(--ink);
+  }
+  .num-row input:focus{outline:none;border-color:var(--turf);}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+    background:var(--fairway);color:#fff;padding:11px 18px;border-radius:24px;
+    font-size:13px;font-weight:500;box-shadow:0 6px 18px rgba(0,0,0,0.18);
+    opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;z-index:60;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+
+  .settings-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);}
+  .settings-row:last-child{border-bottom:none;}
+  .settings-row label{font-size:13.5px;font-weight:500;}
+  .stepper{display:flex;align-items:center;gap:10px;}
+  .stepper button{
+    width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);background:var(--white);
+    font-size:15px;cursor:pointer;color:var(--ink);
+  }
+  .stepper span{font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;min-width:16px;text-align:center;}
+
+  .legend{display:flex;gap:14px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
+  .legend-item{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <h1>GRIND CARD</h1>
+    <button class="gear" id="gearBtn">&#9881;</button>
+  </div>
+  <div class="tagline">Practice, scored like a round.</div>
+
+  <div class="priority">
+    <div class="label">This week</div>
+    <input id="priorityInput" placeholder="Set this week's #1 focus...">
+  </div>
+
+  <div class="assign-card" id="assignCard"></div>
+
+  <div class="streak-row">
+    <div class="card streak-card">
+      <div class="streak-flag">&#9873;</div>
+      <div>
+        <div class="streak-num" id="streakNum">0</div>
+        <div class="streak-sub"><b>week streak</b><br>hitting your goal</div>
+      </div>
+    </div>
+    <div class="card week-card">
+      <div class="week-goal-label">This week</div>
+      <div class="week-bar-track"><div class="week-bar-fill" id="weekBarFill" style="width:0%"></div></div>
+      <div class="week-goal-num" id="weekGoalNum">0 / 4 sessions</div>
+    </div>
+  </div>
+
+  <button class="log-btn" id="openLog">+ LOG TODAY'S PRACTICE</button>
+
+  <div class="sec-title">Last 7 days</div>
+  <div class="strip" id="weekStrip"></div>
+  <div class="legend">
+    <div class="legend-item"><div class="sym-circle" style="width:11px;height:11px;"></div> beat target</div>
+    <div class="legend-item"><div class="sym-square" style="width:9px;height:9px;"></div> missed target</div>
+    <div class="legend-item"><div class="sym-dash"></div> no drill logged</div>
+  </div>
+
+  <div class="sec-title">This month</div>
+  <div class="stats-row" id="statsRow"></div>
+
+  <div class="sec-title">Recent sessions</div>
+  <div id="sessList"></div>
+
+  <div class="sec-title">Rounds</div>
+  <div id="roundList"></div>
+  <button class="add-round" id="addRound">+ log a round score</button>
+</div>
+
+<!-- Log Session Sheet -->
+<div class="overlay" id="logOverlay">
+  <div class="sheet">
+    <div class="sheet-head"><h2>Log Practice</h2><button class="sheet-close" id="closeLog">&times;</button></div>
+
+    <div class="field-label">Focus</div>
+    <div class="chips" id="focusChips">
+      <div class="chip" data-v="Putting">Putting</div>
+      <div class="chip" data-v="Wedges">Wedges</div>
+      <div class="chip" data-v="Short Game">Short Game</div>
+      <div class="chip" data-v="Full Swing">Full Swing</div>
+      <div class="chip" data-v="Course Sim">Course Sim</div>
+    </div>
+
+    <div class="field-label">Pressure drill</div>
+    <div class="toggle3" id="beatToggle">
+      <div class="opt beat" data-v="yes">Beat it</div>
+      <div class="opt miss" data-v="no">Missed it</div>
+      <div class="opt none" data-v="none">Didn't run one</div>
+    </div>
+
+    <div class="field-label">Intent &amp; focus today</div>
+    <div class="intent-row" id="intentRow">
+      <div class="intent-opt" data-v="1">1</div>
+      <div class="intent-opt" data-v="2">2</div>
+      <div class="intent-opt" data-v="3">3</div>
+      <div class="intent-opt" data-v="4">4</div>
+      <div class="intent-opt" data-v="5">5</div>
+    </div>
+
+    <div class="field-label">Note <span style="text-transform:none;letter-spacing:0;">(optional)</span></div>
+    <textarea class="note-input" id="noteInput" rows="2" placeholder="One line. What to carry to next time."></textarea>
+
+    <button class="save-btn" id="saveSession" disabled>Save session</button>
+    <button class="del-btn" id="deleteSession" style="display:none;">Delete this entry</button>
+  </div>
+</div>
+
+<!-- Round Sheet -->
+<div class="overlay" id="roundOverlay">
+  <div class="sheet">
+    <div class="sheet-head"><h2>Log a Round</h2><button class="sheet-close" id="closeRound">&times;</button></div>
+    <div class="field-label">Score</div>
+    <div class="num-row"><input id="roundScore" type="number" placeholder="e.g. 76"></div>
+    <div class="field-label">Biggest takeaway</div>
+    <textarea class="note-input" id="roundNote" rows="2" placeholder="What cost you strokes / what's the priority now?"></textarea>
+    <button class="save-btn" id="saveRound">Save round</button>
+    <button class="del-btn" id="deleteRound" style="display:none;">Delete this round</button>
+  </div>
+</div>
+
+<!-- Settings Sheet -->
+<div class="overlay" id="settingsOverlay">
+  <div class="sheet">
+    <div class="sheet-head"><h2>Settings</h2><button class="sheet-close" id="closeSettings">&times;</button></div>
+    <div class="settings-row">
+      <label>Weekly session goal</label>
+      <div class="stepper">
+        <button id="goalDown">&minus;</button>
+        <span id="goalVal">4</span>
+        <button id="goalUp">+</button>
+      </div>
+    </div>
+    <div class="settings-row">
+      <label style="color:var(--flag);">Clear all data</label>
+      <button class="del-btn" style="width:auto;margin:0;padding:8px 14px;" id="clearData">Reset</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+  // Works inside Claude's artifact viewer (window.storage) AND when this file
+  // is self-hosted anywhere else (falls back to the browser's localStorage).
+  const STORE = window.storage ? window.storage : {
+    async get(key){ const v = localStorage.getItem('grindcard:'+key); return v!==null ? {key, value:v} : null; },
+    async set(key, value){ localStorage.setItem('grindcard:'+key, value); return {key, value}; },
+  };
+  let sessions = [];
+  let rounds = [];
+  let weeklyGoal = 4;
+  let priorityText = "";
+  let editingSessionId = null;
+  let editingRoundId = null;
+
+  const $ = id => document.getElementById(id);
+
+  async function loadAll(){
+    try{ const r = await STORE.get('sessions'); sessions = r ? JSON.parse(r.value) : []; }catch(e){ sessions = []; }
+    try{ const r = await STORE.get('rounds'); rounds = r ? JSON.parse(r.value) : []; }catch(e){ rounds = []; }
+    try{ const r = await STORE.get('weeklyGoal'); weeklyGoal = r ? JSON.parse(r.value) : 4; }catch(e){ weeklyGoal = 4; }
+    try{ const r = await STORE.get('priority'); priorityText = r ? r.value : ""; }catch(e){ priorityText = ""; }
+    $('priorityInput').value = priorityText;
+    $('goalVal').textContent = weeklyGoal;
+    render();
+  }
+
+  async function saveSessions(){ try{ await STORE.set('sessions', JSON.stringify(sessions)); }catch(e){} }
+  async function saveRounds(){ try{ await STORE.set('rounds', JSON.stringify(rounds)); }catch(e){} }
+  async function saveGoal(){ try{ await STORE.set('weeklyGoal', JSON.stringify(weeklyGoal)); }catch(e){} }
+  async function savePriority(){ try{ await STORE.set('priority', priorityText); }catch(e){} }
+
+  function todayISO(){ return new Date().toISOString().slice(0,10); }
+  function fmtDate(iso){
+    const d = new Date(iso+'T00:00:00');
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  }
+  function getMonday(d){
+    const date = new Date(d);
+    const day = date.getDay();
+    const diff = (day === 0 ? -6 : 1) - day;
+    date.setDate(date.getDate()+diff);
+    return date.toISOString().slice(0,10);
+  }
+
+  function weekKeyFor(iso){ return getMonday(iso+'T00:00:00'); }
+
+  function currentWeekKey(){ return getMonday(new Date()); }
+
+  function computeStreak(){
+    const byWeek = {};
+    sessions.forEach(s=>{
+      const wk = weekKeyFor(s.date);
+      byWeek[wk] = (byWeek[wk]||0)+1;
+    });
+    const thisWeek = currentWeekKey();
+    let streak = 0;
+    let cursor = new Date(thisWeek+'T00:00:00');
+    cursor.setDate(cursor.getDate()-7); // start at previous week (completed)
+    while(true){
+      const key = cursor.toISOString().slice(0,10);
+      const count = byWeek[key]||0;
+      if(count >= weeklyGoal){ streak++; cursor.setDate(cursor.getDate()-7); }
+      else break;
+    }
+    return streak;
+  }
+
+  function thisWeekCount(){
+    const wk = currentWeekKey();
+    return sessions.filter(s=>weekKeyFor(s.date)===wk).length;
+  }
+
+  // ---- Today's Assignment engine ----
+  // Weighted pool: short game / wedges / putting appear more often than full swing,
+  // reflecting their disproportionate scoring value. Every entry has a real target
+  // and a pressure condition — no "just hit balls" entries exist in this pool.
+  const DRILL_POOL = [
+    { focus:'Short Game', name:'Up & Down Gauntlet', w:3,
+      text:'10 balls, 10 different lies inside 30 yards \u2014 vary the shot every time. Target: 7/10 up-and-down. Miss the target and you run it back.' },
+    { focus:'Short Game', name:'3-Spot Landing Test', w:2,
+      text:'Pick 3 different landing spots around the green. One ball each. Must finish inside a 3-foot circle on at least 2 of 3.' },
+    { focus:'Short Game', name:'Bunker to 3 Feet', w:2,
+      text:'8 bunker shots, varied lies. Target: 5/8 finish inside 3 feet of the pin.' },
+    { focus:'Short Game', name:'One-Ball Random Lies', w:1,
+      text:'Drop 6 balls in 6 different bad lies (rough, downhill, tight). One shot each, real target, no re-dos. Score how many finish inside 6 feet.' },
+    { focus:'Wedges', name:'Wedge Ladder', w:3,
+      text:'Hit 50y, 70y, 90y, 110y in random order (call the number before you swing). Miss 15ft on any one and the ladder restarts from the top.' },
+    { focus:'Wedges', name:'Called-Number Wedges', w:2,
+      text:'10 shots, a random yardage between 40\u2013100y called before every swing. Target: 6/10 finish inside 10 feet.' },
+    { focus:'Wedges', name:'Trajectory Wedges', w:1,
+      text:'6 shots to the same target, alternating full / knockdown / high-flop. Target: 4/6 finish inside 10 feet regardless of trajectory.' },
+    { focus:'Putting', name:'Make 8 in a Row', w:3,
+      text:'6-foot putt. A miss resets your count to zero. Log how many attempts it took you to complete 8 straight.' },
+    { focus:'Putting', name:'3-6-9 Pressure Run', w:2,
+      text:'3 in a row from 3ft, then 3 in a row from 6ft, then 3 in a row from 9ft. Any miss restarts that distance.' },
+    { focus:'Putting', name:'Lag Ladder', w:1,
+      text:'3 lag putts from 40+ feet, 3 different lengths. Target: leave all 3 inside a 3-foot circle.' },
+    { focus:'Putting', name:'Around-the-Clock', w:1,
+      text:'8 putts from 4 feet, evenly spaced around the hole. Target: 7/8. Different break every time \u2014 no repeat reads.' },
+    { focus:'Full Swing', name:'9-Shot Shape Call', w:1,
+      text:'9 balls. Call a target and a shape (draw / fade / high / low) before each one. Target: land your intended shape 6/9 times.' },
+    { focus:'Full Swing', name:'Fairway Finder', w:1,
+      text:'10 tee shots at a random target line. Target: 7/10 finish inside a 30-yard corridor.' },
+    { focus:'Course Sim', name:'9-Hole Simulation', w:2,
+      text:'One ball per hole, full pre-shot routine, no re-hits. Play it like it counts and log your score to par.' },
+    { focus:'Course Sim', name:'Worst-Two-Clubs Scramble', w:1,
+      text:'Play 6 holes using only your two worst clubs off the tee. Forces decision-making under a real constraint.' },
+  ];
+  const WEIGHTED_POOL = DRILL_POOL.flatMap(d => Array(d.w).fill(d));
+  const FOCUS_LIST = ['Putting','Wedges','Short Game','Full Swing','Course Sim'];
+
+  let currentAssignment = null;
+  let assignFilter = null; // null = "Surprise me" (full weighted pool); else a focus name
+  let loggingFromAssignment = false;
+
+  async function loadAssignment(){
+    let stored = null;
+    try{ const r = await STORE.get('assignment'); stored = r ? JSON.parse(r.value) : null; }catch(e){ stored = null; }
+    if(stored && stored.date === todayISO()){
+      currentAssignment = stored.drill;
+    } else {
+      currentAssignment = pickAssignment(stored ? stored.drill : null);
+      await saveAssignment();
+    }
+    renderAssignment();
+  }
+  async function saveAssignment(){
+    try{ await STORE.set('assignment', JSON.stringify({ date: todayISO(), drill: currentAssignment })); }catch(e){}
+  }
+  function pickAssignment(avoid){
+    const pool = assignFilter ? WEIGHTED_POOL.filter(d=>d.focus===assignFilter) : WEIGHTED_POOL;
+    let pick;
+    let tries = 0;
+    do{ pick = pool[Math.floor(Math.random()*pool.length)]; tries++; }
+    while(avoid && pick.name === avoid.name && pool.length>1 && tries < 20);
+    return pick;
+  }
+  function renderAssignment(){
+    const d = currentAssignment;
+    const chipsHtml = '<div class="assign-filters">'+
+      '<div class="afchip'+(assignFilter===null?' sel':'')+'" data-f="">Surprise me</div>'+
+      FOCUS_LIST.map(f=>'<div class="afchip'+(assignFilter===f?' sel':'')+'" data-f="'+f+'">'+f+'</div>').join('')+
+      '</div>';
+    $('assignCard').innerHTML =
+      '<div class="assign-eyebrow">Today\u2019s Assignment</div>'+
+      chipsHtml+
+      '<div class="assign-tag">'+d.focus+'</div>'+
+      '<div class="assign-name">'+d.name+'</div>'+
+      '<div class="assign-text">'+d.text+'</div>'+
+      '<div class="assign-btns">'+
+        '<div class="assign-btn" id="rerollBtn">New assignment</div>'+
+        '<div class="assign-btn primary" id="logAssignBtn">Log result</div>'+
+      '</div>';
+    document.querySelectorAll('.afchip').forEach(c=>{
+      c.addEventListener('click', async ()=>{
+        assignFilter = c.dataset.f || null;
+        currentAssignment = pickAssignment(currentAssignment);
+        await saveAssignment();
+        renderAssignment();
+      });
+    });
+    $('rerollBtn').addEventListener('click', async ()=>{
+      currentAssignment = pickAssignment(currentAssignment);
+      await saveAssignment();
+      renderAssignment();
+    });
+    $('logAssignBtn').addEventListener('click', ()=>{
+      loggingFromAssignment = true;
+      openLogSheet(null, { focus: currentAssignment.focus, note: currentAssignment.name });
+    });
+  }
+  async function advanceAssignmentAfterLog(){
+    currentAssignment = pickAssignment(currentAssignment);
+    await saveAssignment();
+    renderAssignment();
+  }
+
+  function render(){
+    // streak
+    $('streakNum').textContent = computeStreak();
+    const wc = thisWeekCount();
+    $('weekGoalNum').textContent = wc + ' / ' + weeklyGoal + ' sessions';
+    $('weekBarFill').style.width = Math.min(100, (wc/weeklyGoal)*100) + '%';
+
+    // 7-day strip
+    const strip = $('weekStrip');
+    strip.innerHTML = '';
+    const dows = ['S','M','T','W','T','F','S'];
+    for(let i=6;i>=0;i--){
+      const d = new Date(); d.setDate(d.getDate()-i);
+      const iso = d.toISOString().slice(0,10);
+      const daySessions = sessions.filter(s=>s.date===iso);
+      let symHtml = '<div class="sym-empty"></div>';
+      if(daySessions.length){
+        if(daySessions.some(s=>s.beat==='yes')) symHtml = '<div class="sym-circle"></div>';
+        else if(daySessions.some(s=>s.beat==='no')) symHtml = '<div class="sym-square"></div>';
+        else symHtml = '<div class="sym-dash"></div>';
+      }
+      const cell = document.createElement('div');
+      cell.className = 'strip-day';
+      cell.innerHTML = '<div class="dow">'+dows[d.getDay()]+'</div><div class="symbol">'+symHtml+'</div>';
+      strip.appendChild(cell);
+    }
+
+    // month stats
+    const now = new Date();
+    const monthSessions = sessions.filter(s=>{
+      const d = new Date(s.date+'T00:00:00');
+      return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
+    });
+    const withDrill = monthSessions.filter(s=>s.beat==='yes'||s.beat==='no');
+    const beatRate = withDrill.length ? Math.round(100*withDrill.filter(s=>s.beat==='yes').length/withDrill.length) : 0;
+    const avgIntent = monthSessions.length ? (monthSessions.reduce((a,s)=>a+s.intent,0)/monthSessions.length).toFixed(1) : '—';
+    $('statsRow').innerHTML =
+      '<div class="stat"><div class="num">'+monthSessions.length+'</div><div class="lbl">sessions logged</div></div>'+
+      '<div class="stat"><div class="num">'+beatRate+'%</div><div class="lbl">pressure drills beaten</div></div>'+
+      '<div class="stat"><div class="num">'+avgIntent+'</div><div class="lbl">avg intent (1&ndash;5)</div></div>';
+
+    // session list
+    const list = $('sessList');
+    list.innerHTML = '';
+    const recent = [...sessions].sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id).slice(0,12);
+    if(!recent.length){
+      list.innerHTML = '<div class="empty-note">No sessions logged yet. Tap the button above to start.</div>';
+    } else {
+      recent.forEach(s=>{
+        const row = document.createElement('div');
+        row.className = 'sess';
+        let sym = '<div class="sym-dash"></div>';
+        if(s.beat==='yes') sym = '<div class="sym-circle"></div>';
+        else if(s.beat==='no') sym = '<div class="sym-square"></div>';
+        let dots = '';
+        for(let i=1;i<=5;i++){ dots += '<div class="dot'+(i<=s.intent?' on':'')+'"></div>'; }
+        row.innerHTML =
+          '<div class="symbol">'+sym+'</div>'+
+          '<div class="sess-body">'+
+            '<div class="sess-top"><div class="sess-focus">'+s.focus+'</div><div class="sess-date">'+fmtDate(s.date)+'</div></div>'+
+            (s.note ? '<div class="sess-note">'+escapeHtml(s.note)+'</div>' : '')+
+          '</div>'+
+          '<div class="sess-intent">'+dots+'</div>';
+        row.addEventListener('click', ()=>{ loggingFromAssignment = false; openLogSheet(s); });
+        list.appendChild(row);
+      });
+    }
+
+    // rounds
+    const rl = $('roundList');
+    rl.innerHTML = '';
+    const recentRounds = [...rounds].sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id).slice(0,6);
+    if(recentRounds.length){
+      recentRounds.forEach(r=>{
+        const row = document.createElement('div');
+        row.className = 'round';
+        row.innerHTML =
+          '<div class="score">'+r.score+'</div>'+
+          '<div class="round-body"><div class="round-date">'+fmtDate(r.date)+'</div>'+
+          (r.note ? '<div class="round-note">'+escapeHtml(r.note)+'</div>' : '')+'</div>';
+        row.addEventListener('click', ()=> openRoundSheet(r));
+        rl.appendChild(row);
+      });
+    }
+  }
+
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function showToast(msg){
+    const t = $('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 1600);
+  }
+
+  // ---- Log sheet logic ----
+  let focusVal = null, beatVal = null, intentVal = null;
+
+  function resetLogForm(){
+    focusVal = null; beatVal = null; intentVal = null;
+    document.querySelectorAll('#focusChips .chip').forEach(c=>c.classList.remove('sel'));
+    document.querySelectorAll('#beatToggle .opt').forEach(c=>c.classList.remove('sel'));
+    document.querySelectorAll('#intentRow .intent-opt').forEach(c=>c.classList.remove('sel'));
+    $('noteInput').value = '';
+    $('deleteSession').style.display = 'none';
+    editingSessionId = null;
+    validateForm();
+  }
+
+  function openLogSheet(existing, prefill){
+    resetLogForm();
+    if(existing){
+      editingSessionId = existing.id;
+      focusVal = existing.focus; beatVal = existing.beat; intentVal = existing.intent;
+      document.querySelectorAll('#focusChips .chip').forEach(c=>{ if(c.dataset.v===focusVal) c.classList.add('sel'); });
+      document.querySelectorAll('#beatToggle .opt').forEach(c=>{ if(c.dataset.v===beatVal) c.classList.add('sel'); });
+      document.querySelectorAll('#intentRow .intent-opt').forEach(c=>{ if(+c.dataset.v===intentVal) c.classList.add('sel'); });
+      $('noteInput').value = existing.note||'';
+      $('deleteSession').style.display = 'block';
+    } else if(prefill){
+      focusVal = prefill.focus;
+      document.querySelectorAll('#focusChips .chip').forEach(c=>{ if(c.dataset.v===focusVal) c.classList.add('sel'); });
+      $('noteInput').value = prefill.note||'';
+    }
+    validateForm();
+    $('logOverlay').classList.add('show');
+  }
+
+  function validateForm(){
+    $('saveSession').disabled = !(focusVal && beatVal && intentVal);
+  }
+
+  document.querySelectorAll('#focusChips .chip').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('#focusChips .chip').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel'); focusVal = c.dataset.v; validateForm();
+    });
+  });
+  document.querySelectorAll('#beatToggle .opt').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('#beatToggle .opt').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel'); beatVal = c.dataset.v; validateForm();
+    });
+  });
+  document.querySelectorAll('#intentRow .intent-opt').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('#intentRow .intent-opt').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel'); intentVal = +c.dataset.v; validateForm();
+    });
+  });
+
+  $('openLog').addEventListener('click', ()=>{ loggingFromAssignment = false; openLogSheet(null); });
+  $('closeLog').addEventListener('click', ()=> $('logOverlay').classList.remove('show'));
+  $('logOverlay').addEventListener('click', e=>{ if(e.target.id==='logOverlay') $('logOverlay').classList.remove('show'); });
+
+  $('saveSession').addEventListener('click', async ()=>{
+    const wasNewFromAssignment = !editingSessionId && loggingFromAssignment;
+    if(editingSessionId){
+      const s = sessions.find(x=>x.id===editingSessionId);
+      s.focus=focusVal; s.beat=beatVal; s.intent=intentVal; s.note=$('noteInput').value.trim();
+    } else {
+      sessions.push({ id: Date.now(), date: todayISO(), focus: focusVal, beat: beatVal, intent: intentVal, note: $('noteInput').value.trim() });
+    }
+    await saveSessions();
+    $('logOverlay').classList.remove('show');
+    loggingFromAssignment = false;
+    if(wasNewFromAssignment){
+      await advanceAssignmentAfterLog();
+      showToast('Logged. Next assignment loaded.');
+    } else {
+      showToast(editingSessionId ? 'Session updated.' : 'Logged. Streak alive.');
+    }
+    render();
+  });
+
+  $('deleteSession').addEventListener('click', async ()=>{
+    sessions = sessions.filter(s=>s.id!==editingSessionId);
+    await saveSessions();
+    $('logOverlay').classList.remove('show');
+    render();
+    showToast('Entry deleted.');
+  });
+
+  // ---- Round sheet logic ----
+  function openRoundSheet(existing){
+    editingRoundId = null;
+    $('roundScore').value = '';
+    $('roundNote').value = '';
+    $('deleteRound').style.display = 'none';
+    if(existing){
+      editingRoundId = existing.id;
+      $('roundScore').value = existing.score;
+      $('roundNote').value = existing.note||'';
+      $('deleteRound').style.display = 'block';
+    }
+    $('roundOverlay').classList.add('show');
+  }
+  $('addRound').addEventListener('click', ()=> openRoundSheet(null));
+  $('closeRound').addEventListener('click', ()=> $('roundOverlay').classList.remove('show'));
+  $('roundOverlay').addEventListener('click', e=>{ if(e.target.id==='roundOverlay') $('roundOverlay').classList.remove('show'); });
+
+  $('saveRound').addEventListener('click', async ()=>{
+    const score = parseInt($('roundScore').value,10);
+    if(!score) return;
+    if(editingRoundId){
+      const r = rounds.find(x=>x.id===editingRoundId);
+      r.score = score; r.note = $('roundNote').value.trim();
+    } else {
+      rounds.push({ id: Date.now(), date: todayISO(), score: score, note: $('roundNote').value.trim() });
+    }
+    await saveRounds();
+    $('roundOverlay').classList.remove('show');
+    render();
+    showToast('Round saved.');
+  });
+  $('deleteRound').addEventListener('click', async ()=>{
+    rounds = rounds.filter(r=>r.id!==editingRoundId);
+    await saveRounds();
+    $('roundOverlay').classList.remove('show');
+    render();
+    showToast('Round deleted.');
+  });
+
+  // ---- Priority ----
+  let priorityDebounce;
+  $('priorityInput').addEventListener('input', e=>{
+    priorityText = e.target.value;
+    clearTimeout(priorityDebounce);
+    priorityDebounce = setTimeout(savePriority, 500);
+  });
+
+  // ---- Settings ----
+  $('gearBtn').addEventListener('click', ()=> $('settingsOverlay').classList.add('show'));
+  $('closeSettings').addEventListener('click', ()=> $('settingsOverlay').classList.remove('show'));
+  $('settingsOverlay').addEventListener('click', e=>{ if(e.target.id==='settingsOverlay') $('settingsOverlay').classList.remove('show'); });
+  $('goalUp').addEventListener('click', async ()=>{ weeklyGoal = Math.min(14, weeklyGoal+1); $('goalVal').textContent=weeklyGoal; await saveGoal(); render(); });
+  $('goalDown').addEventListener('click', async ()=>{ weeklyGoal = Math.max(1, weeklyGoal-1); $('goalVal').textContent=weeklyGoal; await saveGoal(); render(); });
+  $('clearData').addEventListener('click', async ()=>{
+    if(!confirm('Clear all logged sessions and rounds? This cannot be undone.')) return;
+    sessions = []; rounds = [];
+    await saveSessions(); await saveRounds();
+    $('settingsOverlay').classList.remove('show');
+    render();
+    showToast('All data cleared.');
+  });
+
+  loadAll();
+  loadAssignment();
+})();
+</script>
+</body>
+</html>
