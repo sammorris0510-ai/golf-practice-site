@@ -159,14 +159,8 @@
   .sym-empty{width:5px;height:5px;background:var(--line);border-radius:50%;}
 
   /* Stats row */
-  const totalTime = monthSessions.reduce((a,s)=>a+(s.time||0),0);
-const avgTime = monthSessions.length ? Math.round(totalTime/monthSessions.length) : 0;
-const avgQuality = monthSessions.length ? (monthSessions.reduce((a,s)=>a+(s.quality||0),0)/monthSessions.length).toFixed(1) : '—';
-
-const t5Rounds = rounds.filter(r=>r.t5);
-const avg3 = t5Rounds.length ? (t5Rounds.reduce((a,r)=>a+r.t5.t3,0)/t5Rounds.length).toFixed(1) : '—';
-  .stats-row{display:flex;gap:10px;margin-top:8px;}
-  .stat{flex:1;background:var(--white);border:1px solid var(--line);border-radius:10px;padding:12px 10px;text-align:center;}
+  .stats-row{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;}
+  .stat{flex:1 1 calc(50% - 5px);background:var(--white);border:1px solid var(--line);border-radius:10px;padding:12px 10px;text-align:center;}
   .stat .num{font-family:'Oswald',sans-serif;font-weight:700;font-size:22px;color:var(--fairway);}
   .stat .lbl{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.25;}
 
@@ -199,6 +193,67 @@ const avg3 = t5Rounds.length ? (t5Rounds.reduce((a,r)=>a+r.t5.t3,0)/t5Rounds.len
   .add-round{
     width:100%;background:none;border:1.5px dashed var(--line);border-radius:9px;
     padding:10px;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;margin-top:2px;
+  }
+
+  .accordion-head{
+    display:flex;justify-content:space-between;align-items:center;cursor:pointer;
+    background:var(--white);border:1px solid var(--line);border-radius:9px;padding:12px 14px;
+  }
+  .accordion-head span.tt{font-family:'Oswald',sans-serif;font-weight:600;font-size:14px;color:var(--fairway);}
+  .accordion-head .chev{font-size:13px;color:var(--muted);transition:transform .2s;}
+  .accordion-head.open .chev{transform:rotate(180deg);}
+  .accordion-body{display:none;padding:4px 2px 2px;}
+  .accordion-body.open{display:block;}
+  .drill-group-title{
+    font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;
+    color:var(--muted);margin:16px 0 7px 2px;
+  }
+  .drill-item{
+    background:var(--white);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:6px;
+  }
+  .drill-item .dn{font-size:13.5px;font-weight:600;margin-bottom:2px;}
+  .drill-item .dt{font-size:12px;color:var(--muted);line-height:1.4;}
+
+  /* Tiger 5 Dashboard */
+  .t5-mini-card{
+    background:var(--white);border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;
+  }
+  .t5-mini-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .t5-mini-worst{font-family:'Oswald',sans-serif;font-weight:600;font-size:14px;color:var(--fairway);}
+  .t5-mini-sub{font-size:11px;color:var(--muted);}
+  .t5-mini-arrow{font-size:13px;color:var(--muted);}
+  .t5-mini-bars{display:flex;gap:5px;align-items:flex-end;height:34px;}
+  .t5-mini-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;height:100%;}
+  .t5-mini-bar{width:100%;border-radius:3px 3px 0 0;background:var(--turf);min-height:3px;}
+  .t5-mini-bar.worst{background:var(--flag);}
+  .t5-mini-lbl{font-size:8.5px;color:var(--muted);text-align:center;line-height:1.1;}
+  .t5-empty{font-size:12.5px;color:var(--muted);text-align:center;padding:6px 0;}
+
+  .t5-bar-row{margin-bottom:12px;}
+  .t5-bar-row-top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px;}
+  .t5-bar-row-top .nm{font-weight:600;}
+  .t5-bar-row-top .val{color:var(--muted);font-family:'Oswald',sans-serif;font-weight:600;}
+  .t5-bar-track{height:10px;background:var(--paper-2);border-radius:5px;overflow:hidden;}
+  .t5-bar-fill{height:100%;border-radius:5px;background:var(--turf);}
+  .t5-bar-fill.worst{background:var(--flag);}
+
+  .t5-summary-row{display:flex;gap:10px;margin-bottom:16px;}
+  .t5-summary-stat{flex:1;background:var(--white);border:1px solid var(--line);border-radius:9px;padding:10px;text-align:center;}
+  .t5-summary-stat .num{font-family:'Oswald',sans-serif;font-weight:700;font-size:18px;color:var(--fairway);}
+  .t5-summary-stat .lbl{font-size:9.5px;color:var(--muted);margin-top:2px;line-height:1.2;}
+
+  .score-spark{display:flex;gap:4px;align-items:flex-end;height:60px;margin-bottom:6px;}
+  .score-spark-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px;}
+  .score-spark-bar{width:100%;background:var(--fairway);border-radius:3px 3px 0 0;min-height:4px;}
+  .score-spark-lbl{font-size:8px;color:var(--muted);}
+
+  .t5-drill-focus-tag{
+    display:inline-block;background:var(--flag);color:#fff;font-size:11px;font-weight:600;
+    padding:4px 10px;border-radius:12px;margin-bottom:10px;
+  }
+  .t5-set-focus-btn{
+    width:100%;background:var(--fairway);color:#fff;border:none;border-radius:9px;padding:11px;
+    font-family:'Oswald',sans-serif;font-weight:600;font-size:13.5px;cursor:pointer;margin-top:4px;margin-bottom:18px;
   }
 
   /* Sheet / modal */
@@ -286,6 +341,18 @@ const avg3 = t5Rounds.length ? (t5Rounds.reduce((a,r)=>a+r.t5.t3,0)/t5Rounds.len
     font-size:15px;cursor:pointer;color:var(--ink);
   }
   .stepper span{font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;min-width:16px;text-align:center;}
+  .stepper.sm button{width:24px;height:24px;font-size:13px;}
+  .stepper.sm span{min-width:14px;font-size:13px;}
+
+  .tiger5-box{background:var(--white);border:1px solid var(--line);border-radius:9px;padding:4px 12px;margin-top:2px;}
+  .t5-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--paper-2);}
+  .t5-row:last-of-type{border-bottom:none;}
+  .t5-label{font-size:12.5px;color:var(--ink);}
+  .t5-total-row{
+    display:flex;justify-content:space-between;align-items:center;padding:9px 0 6px;
+    font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;color:var(--flag);
+    border-top:1.5px solid var(--line);margin-top:2px;
+  }
 
   .legend{display:flex;gap:14px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
   .legend-item{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted);}
@@ -326,9 +393,8 @@ const avg3 = t5Rounds.length ? (t5Rounds.reduce((a,r)=>a+r.t5.t3,0)/t5Rounds.len
   <div class="sec-title">Last 7 days</div>
   <div class="strip" id="weekStrip"></div>
   <div class="legend">
-    <div class="legend-item"><div class="sym-circle" style="width:11px;height:11px;"></div> beat target</div>
-    <div class="legend-item"><div class="sym-square" style="width:9px;height:9px;"></div> missed target</div>
-    <div class="legend-item"><div class="sym-dash"></div> no drill logged</div>
+    <div class="legend-item"><div class="sym-circle" style="width:11px;height:11px;"></div> practiced</div>
+    <div class="legend-item"><div class="sym-empty"></div> no session</div>
   </div>
 
   <div class="sec-title">This month</div>
@@ -340,6 +406,24 @@ const avg3 = t5Rounds.length ? (t5Rounds.reduce((a,r)=>a+r.t5.t3,0)/t5Rounds.len
   <div class="sec-title">Rounds</div>
   <div id="roundList"></div>
   <button class="add-round" id="addRound">+ log a round score</button>
+
+  <div class="sec-title" style="margin-top:26px;">Tiger 5 Dashboard</div>
+  <div class="t5-mini-card" id="t5MiniCard"></div>
+
+  <div class="sec-title" style="margin-top:26px;">Drill library</div>
+  <div class="accordion-head" id="drillAccHead">
+    <span class="tt">Example Drills</span>
+    <span class="chev">&#9660;</span>
+  </div>
+  <div class="accordion-body" id="drillAccBody"></div>
+</div>
+
+<!-- Tiger 5 Dashboard Sheet -->
+<div class="overlay" id="t5DashOverlay">
+  <div class="sheet">
+    <div class="sheet-head"><h2>Tiger 5 Dashboard</h2><button class="sheet-close" id="closeT5Dash">&times;</button></div>
+    <div id="t5DashBody"></div>
+  </div>
 </div>
 
 <!-- Log Session Sheet -->
@@ -356,35 +440,28 @@ const avg3 = t5Rounds.length ? (t5Rounds.reduce((a,r)=>a+r.t5.t3,0)/t5Rounds.len
       <div class="chip" data-v="Course Sim">Course Sim</div>
     </div>
 
-    <div class="field-label">Pressure drill</div>
-    <div class="toggle3" id="beatToggle">
-      <div class="opt beat" data-v="yes">Beat it</div>
-      <div class="opt miss" data-v="no">Missed it</div>
-      <div class="opt none" data-v="none">Didn't run one</div>
+    <div class="field-label">Time spent</div>
+    <div class="chips" id="timeChips">
+      <div class="chip" data-v="30">30m</div>
+      <div class="chip" data-v="45">45m</div>
+      <div class="chip" data-v="60">60m</div>
+      <div class="chip" data-v="90">90m</div>
+      <div class="chip" data-v="120">120m</div>
+      <div class="chip" data-v="other">Other</div>
+    </div>
+    <input class="note-input" id="timeCustom" type="number" min="1" placeholder="Minutes" style="display:none;margin-top:8px;font-family:'Oswald',sans-serif;font-weight:600;">
+
+    <div class="field-label">Intent <span style="text-transform:none;letter-spacing:0;">(how locked-in were you)</span></div>
+    <div class="intent-row" id="intentRow">
+      <div class="intent-opt" data-v="1">1</div>
+      <div class="intent-opt" data-v="2">2</div>
+      <div class="intent-opt" data-v="3">3</div>
+      <div class="intent-opt" data-v="4">4</div>
+      <div class="intent-opt" data-v="5">5</div>
     </div>
 
-    <div class="field-label">Intent &amp; focus today</div>
-    <div class="field-label">Time spent (minutes)</div>
-<input class="note-input" id="timeInput" type="number" placeholder="e.g. 60">
-
-<div class="field-label">Quality</div>
-<div class="intent-row" id="qualityRow">
-  <div class="intent-opt" data-v="1">1</div>
-  <div class="intent-opt" data-v="2">2</div>
-  <div class="intent-opt" data-v="3">3</div>
-  <div class="intent-opt" data-v="4">4</div>
-  <div class="intent-opt" data-v="5">5</div>
-</div>
-
-<div class="field-label">Example drill</div>
-<div class="chips" id="drillChips">
-  <div class="chip" data-v="Make 8 in a row (6ft)">Make 8 straight (6ft)</div>
-  <div class="chip" data-v="3-6-9 ladder">3-6-9 ladder</div>
-  <div class="chip" data-v="Wedge ladder 50-100y">Wedge ladder</div>
-  <div class="chip" data-v="Up & Down 10 balls">Up & Down 10</div>
-  <div class="chip" data-v="Fairway finder 10 balls">Fairway finder</div>
-</div>
-    <div class="intent-row" id="intentRow">
+    <div class="field-label">Quality of practice <span style="text-transform:none;letter-spacing:0;">(how well it went)</span></div>
+    <div class="intent-row" id="qualityRow">
       <div class="intent-opt" data-v="1">1</div>
       <div class="intent-opt" data-v="2">2</div>
       <div class="intent-opt" data-v="3">3</div>
@@ -406,20 +483,44 @@ const avg3 = t5Rounds.length ? (t5Rounds.reduce((a,r)=>a+r.t5.t3,0)/t5Rounds.len
     <div class="sheet-head"><h2>Log a Round</h2><button class="sheet-close" id="closeRound">&times;</button></div>
     <div class="field-label">Score</div>
     <div class="num-row"><input id="roundScore" type="number" placeholder="e.g. 76"></div>
-rounds.push({
-  id: Date.now(),
-  date: todayISO(),
-  score: score,
-  note: $('roundNote').value.trim(),
-  t5: {
-    t3: +$('t3putt').value || 0,
-    dbl: +$('tdoubles').value || 0,
-    pen: +$('tpen').value || 0,
-    y150: +$('t150').value || 0,
-    y100: +$('t100').value || 0
-  }
-});
-    <textarea class="note-input" id="roundNote" rows="2" placeholder="What cost you strokes / what's the priority now?"></textarea>
+
+    <div class="field-label">Tiger 5 <span style="text-transform:none;letter-spacing:0;">(score-killers &mdash; count each)</span></div>
+    <div class="tiger5-box" id="tiger5Box">
+      <div class="t5-row" data-k="doubles">
+        <span class="t5-label">Doubles or worse</span>
+        <div class="stepper sm"><button class="t5-minus" type="button">&minus;</button><span class="t5-val">0</span><button class="t5-plus" type="button">+</button></div>
+      </div>
+      <div class="t5-row" data-k="bogeyInside150">
+        <span class="t5-label">Bogeys from inside 150y</span>
+        <div class="stepper sm"><button class="t5-minus" type="button">&minus;</button><span class="t5-val">0</span><button class="t5-plus" type="button">+</button></div>
+      </div>
+      <div class="t5-row" data-k="threePutts">
+        <span class="t5-label">3-putts</span>
+        <div class="stepper sm"><button class="t5-minus" type="button">&minus;</button><span class="t5-val">0</span><button class="t5-plus" type="button">+</button></div>
+      </div>
+      <div class="t5-row" data-k="missedUpDown">
+        <span class="t5-label">Missed up-&amp;-down inside 30y</span>
+        <div class="stepper sm"><button class="t5-minus" type="button">&minus;</button><span class="t5-val">0</span><button class="t5-plus" type="button">+</button></div>
+      </div>
+      <div class="t5-row" data-k="penalties">
+        <span class="t5-label">Penalty strokes (OB / water)</span>
+        <div class="stepper sm"><button class="t5-minus" type="button">&minus;</button><span class="t5-val">0</span><button class="t5-plus" type="button">+</button></div>
+      </div>
+      <div class="t5-total-row"><span>Tiger 5 total</span><span id="t5Total">0</span></div>
+    </div>
+
+    <div class="field-label">What cost you the most strokes?</div>
+    <div class="chips" id="roundWeaknessChips">
+      <div class="chip" data-v="Full Swing">Driving</div>
+      <div class="chip" data-v="Wedges">Approach / Wedges</div>
+      <div class="chip" data-v="Short Game">Short Game</div>
+      <div class="chip" data-v="Putting">Putting</div>
+      <div class="chip" data-v="Course Sim">Course Mgmt / Mental</div>
+    </div>
+    <div style="font-size:11.5px;color:var(--muted);margin-top:8px;line-height:1.4;">Picking one updates Today\u2019s Assignment to focus there.</div>
+
+    <div class="field-label">Note <span style="text-transform:none;letter-spacing:0;">(optional)</span></div>
+    <textarea class="note-input" id="roundNote" rows="2" placeholder="Anything specific to remember."></textarea>
     <button class="save-btn" id="saveRound">Save round</button>
     <button class="del-btn" id="deleteRound" style="display:none;">Delete this round</button>
   </div>
@@ -523,6 +624,7 @@ rounds.push({
   // reflecting their disproportionate scoring value. Every entry has a real target
   // and a pressure condition — no "just hit balls" entries exist in this pool.
   const DRILL_POOL = [
+    // Short Game (8)
     { focus:'Short Game', name:'Up & Down Gauntlet', w:3,
       text:'10 balls, 10 different lies inside 30 yards \u2014 vary the shot every time. Target: 7/10 up-and-down. Miss the target and you run it back.' },
     { focus:'Short Game', name:'3-Spot Landing Test', w:2,
@@ -531,12 +633,34 @@ rounds.push({
       text:'8 bunker shots, varied lies. Target: 5/8 finish inside 3 feet of the pin.' },
     { focus:'Short Game', name:'One-Ball Random Lies', w:1,
       text:'Drop 6 balls in 6 different bad lies (rough, downhill, tight). One shot each, real target, no re-dos. Score how many finish inside 6 feet.' },
+    { focus:'Short Game', name:'Chip-In Challenge', w:2,
+      text:'10 chips from just off the green. Target: 6/10 either hole out or finish inside 2 feet.' },
+    { focus:'Short Game', name:'Downhill Lie Ladder', w:1,
+      text:'6 shots from a downhill lie to 3 different pins. Target: 4/6 finish inside 8 feet.' },
+    { focus:'Short Game', name:'Flop Shot Test', w:1,
+      text:'5 flop shots over a bunker or rough to a tight pin. Target: 3/5 inside 6 feet \u2014 any shot that doesn\u2019t clear the hazard restarts the set.' },
+    { focus:'Short Game', name:'Ladder to the Fringe', w:1,
+      text:'Start 40 yards out, alternate shot types (pitch, chip, bump-and-run) working closer each rep. Must finish each stage inside 5 feet before advancing.' },
+
+    // Wedges (8)
     { focus:'Wedges', name:'Wedge Ladder', w:3,
       text:'Hit 50y, 70y, 90y, 110y in random order (call the number before you swing). Miss 15ft on any one and the ladder restarts from the top.' },
     { focus:'Wedges', name:'Called-Number Wedges', w:2,
       text:'10 shots, a random yardage between 40\u2013100y called before every swing. Target: 6/10 finish inside 10 feet.' },
     { focus:'Wedges', name:'Trajectory Wedges', w:1,
       text:'6 shots to the same target, alternating full / knockdown / high-flop. Target: 4/6 finish inside 10 feet regardless of trajectory.' },
+    { focus:'Wedges', name:'Full-Swing Wedge Match', w:2,
+      text:'10 shots at a single flag from 100 yards. Target: 6/10 finish inside 15 feet.' },
+    { focus:'Wedges', name:'Spin Control Test', w:1,
+      text:'5 short-sided shots designed to check up quickly. Target: 3/5 stop within 6 feet of where they land.' },
+    { focus:'Wedges', name:'Distance Control Gauntlet', w:2,
+      text:'Hit to 60y, 75y, 90y, 105y markers twice each in random order. Target: 8/10 finish inside 12 feet.' },
+    { focus:'Wedges', name:'One-Club Wedge Challenge', w:1,
+      text:'Using only one wedge, hit 3 different trajectories to the same pin from 80 yards. Target: 2/3 finish inside 10 feet.' },
+    { focus:'Wedges', name:'Fairway Bunker Wedges', w:1,
+      text:'6 wedge shots from a fairway bunker. Target: 4/6 clear the lip cleanly and finish on the green.' },
+
+    // Putting (8)
     { focus:'Putting', name:'Make 8 in a Row', w:3,
       text:'6-foot putt. A miss resets your count to zero. Log how many attempts it took you to complete 8 straight.' },
     { focus:'Putting', name:'3-6-9 Pressure Run', w:2,
@@ -545,14 +669,50 @@ rounds.push({
       text:'3 lag putts from 40+ feet, 3 different lengths. Target: leave all 3 inside a 3-foot circle.' },
     { focus:'Putting', name:'Around-the-Clock', w:1,
       text:'8 putts from 4 feet, evenly spaced around the hole. Target: 7/8. Different break every time \u2014 no repeat reads.' },
+    { focus:'Putting', name:'100-Putt Challenge', w:2,
+      text:'Putt 100 putts today across mixed distances, tallying makes vs. misses. Target: 70% or better makes.' },
+    { focus:'Putting', name:'Two-Putt Circuit', w:2,
+      text:'9 lag putts from 30+ feet at 9 different holes \u2014 must two-putt or better every time. Any 3-putt restarts the circuit.' },
+    { focus:'Putting', name:'Must-Make Closer', w:1,
+      text:'End every putting session with one must-make 4-footer. Miss it and you owe 10 more reps before you can leave.' },
+    { focus:'Putting', name:'Breaking Putt Ladder', w:1,
+      text:'6 putts on a single breaking green at increasing distances (3, 6, 9, 12, 15, 18 ft). Target: make the first 3 and 2-putt the rest.' },
+
+    // Full Swing (8)
     { focus:'Full Swing', name:'9-Shot Shape Call', w:1,
       text:'9 balls. Call a target and a shape (draw / fade / high / low) before each one. Target: land your intended shape 6/9 times.' },
     { focus:'Full Swing', name:'Fairway Finder', w:1,
       text:'10 tee shots at a random target line. Target: 7/10 finish inside a 30-yard corridor.' },
+    { focus:'Full Swing', name:'Draw/Fade Ladder', w:1,
+      text:'Hit 3 draws then 3 fades to the same target. Target: 4/6 finish inside a 20-yard corridor.' },
+    { focus:'Full Swing', name:'Low Point Control', w:1,
+      text:'8 iron shots off a tight lie. Target: 6/8 crisp, ball-first contact \u2014 check the divot on every rep.' },
+    { focus:'Full Swing', name:'Tempo Under Pressure', w:1,
+      text:'10 full swings on a set count-out-loud tempo. Target: 7/10 solid strikes \u2014 a mis-hit resets the streak to zero.' },
+    { focus:'Full Swing', name:'Trouble Shot Simulator', w:1,
+      text:'5 shots from awkward stances (uphill, downhill, ball above/below feet). Target: 3/5 finish on your intended line.' },
+    { focus:'Full Swing', name:'Two-Tee Accuracy Gate', w:2,
+      text:'Set two tees as a 10-yard-wide gate. 10 drives. Target: 6/10 through the gate.' },
+    { focus:'Full Swing', name:'Numbers Game', w:1,
+      text:'10 shots, a random club and target called before each one. Target: 6/10 finish inside 20 yards of the called line.' },
+
+    // Course Sim (8)
     { focus:'Course Sim', name:'9-Hole Simulation', w:2,
       text:'One ball per hole, full pre-shot routine, no re-hits. Play it like it counts and log your score to par.' },
     { focus:'Course Sim', name:'Worst-Two-Clubs Scramble', w:1,
       text:'Play 6 holes using only your two worst clubs off the tee. Forces decision-making under a real constraint.' },
+    { focus:'Course Sim', name:'Up-or-Down Nine', w:1,
+      text:'Play 9 holes keeping score only relative to par. Target: finish level or better.' },
+    { focus:'Course Sim', name:'One-Ball 18', w:1,
+      text:'Simulate all 18 holes with one ball per hole and your full routine. Log the total score \u2014 no mulligans.' },
+    { focus:'Course Sim', name:'Sudden-Death Playoff', w:1,
+      text:'Play 3 holes as if it\u2019s a playoff. One bad hole ends the session early \u2014 extra motivation to stay locked in.' },
+    { focus:'Course Sim', name:'Money Match vs. Yourself', w:1,
+      text:'Play 6 holes, assign a point value to par/birdie/bogey, and tally your \u201Cwinnings\u201D to build real pressure.' },
+    { focus:'Course Sim', name:'Worst-Ball Practice', w:1,
+      text:'Hit two balls off the tee and on approach, always playing the worse of the two. Target: break 42 for 9 holes.' },
+    { focus:'Course Sim', name:'Scramble the Range', w:1,
+      text:'Simulate 9 holes entirely on the range using approximate yardages \u2014 play every shot as if it counts.' },
   ];
   const WEIGHTED_POOL = DRILL_POOL.flatMap(d => Array(d.w).fill(d));
   const FOCUS_LIST = ['Putting','Wedges','Short Game','Full Swing','Course Sim'];
@@ -562,6 +722,7 @@ rounds.push({
   let loggingFromAssignment = false;
 
   async function loadAssignment(){
+    try{ const r = await STORE.get('assignFilter'); assignFilter = r ? JSON.parse(r.value) : null; }catch(e){ assignFilter = null; }
     let stored = null;
     try{ const r = await STORE.get('assignment'); stored = r ? JSON.parse(r.value) : null; }catch(e){ stored = null; }
     if(stored && stored.date === todayISO()){
@@ -574,6 +735,9 @@ rounds.push({
   }
   async function saveAssignment(){
     try{ await STORE.set('assignment', JSON.stringify({ date: todayISO(), drill: currentAssignment })); }catch(e){}
+  }
+  async function saveAssignFilter(){
+    try{ await STORE.set('assignFilter', JSON.stringify(assignFilter)); }catch(e){}
   }
   function pickAssignment(avoid){
     const pool = assignFilter ? WEIGHTED_POOL.filter(d=>d.focus===assignFilter) : WEIGHTED_POOL;
@@ -604,6 +768,7 @@ rounds.push({
         assignFilter = c.dataset.f || null;
         currentAssignment = pickAssignment(currentAssignment);
         await saveAssignment();
+        await saveAssignFilter();
         renderAssignment();
       });
     });
@@ -638,12 +803,7 @@ rounds.push({
       const d = new Date(); d.setDate(d.getDate()-i);
       const iso = d.toISOString().slice(0,10);
       const daySessions = sessions.filter(s=>s.date===iso);
-      let symHtml = '<div class="sym-empty"></div>';
-      if(daySessions.length){
-        if(daySessions.some(s=>s.beat==='yes')) symHtml = '<div class="sym-circle"></div>';
-        else if(daySessions.some(s=>s.beat==='no')) symHtml = '<div class="sym-square"></div>';
-        else symHtml = '<div class="sym-dash"></div>';
-      }
+      const symHtml = daySessions.length ? '<div class="sym-circle"></div>' : '<div class="sym-empty"></div>';
       const cell = document.createElement('div');
       cell.className = 'strip-day';
       cell.innerHTML = '<div class="dow">'+dows[d.getDay()]+'</div><div class="symbol">'+symHtml+'</div>';
@@ -656,16 +816,16 @@ rounds.push({
       const d = new Date(s.date+'T00:00:00');
       return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
     });
-    const withDrill = monthSessions.filter(s=>s.beat==='yes'||s.beat==='no');
-    const beatRate = withDrill.length ? Math.round(100*withDrill.filter(s=>s.beat==='yes').length/withDrill.length) : 0;
-    const avgIntent = monthSessions.length ? (monthSessions.reduce((a,s)=>a+s.intent,0)/monthSessions.length).toFixed(1) : '—';
+    const totalMin = monthSessions.reduce((a,s)=>a+(s.timeMin||0),0);
+    const totalHrs = (totalMin/60).toFixed(1);
+    const avgIntent = monthSessions.length ? (monthSessions.reduce((a,s)=>a+s.intent,0)/monthSessions.length).toFixed(1) : '\u2014';
+    const qualitySessions = monthSessions.filter(s=>s.quality);
+    const avgQuality = qualitySessions.length ? (qualitySessions.reduce((a,s)=>a+s.quality,0)/qualitySessions.length).toFixed(1) : '\u2014';
     $('statsRow').innerHTML =
       '<div class="stat"><div class="num">'+monthSessions.length+'</div><div class="lbl">sessions logged</div></div>'+
-      '<div class="stat"><div class="num">'+beatRate+'%</div><div class="lbl">pressure drills beaten</div></div>'+
-'<div class="stat"><div class="num">'+avgIntent+'</div><div class="lbl">avg intent</div></div>'+
-'<div class="stat"><div class="num">'+avgQuality+'</div><div class="lbl">quality</div></div>'+
-'<div class="stat"><div class="num">'+avgTime+'m</div><div class="lbl">avg time</div></div>'+
-'<div class="stat"><div class="num">'+avg3+'</div><div class="lbl">3-putts</div></div>';
+      '<div class="stat"><div class="num">'+totalHrs+'</div><div class="lbl">hours practiced</div></div>'+
+      '<div class="stat"><div class="num">'+avgIntent+'</div><div class="lbl">avg intent (1&ndash;5)</div></div>'+
+      '<div class="stat"><div class="num">'+avgQuality+'</div><div class="lbl">avg quality (1&ndash;5)</div></div>';
 
     // session list
     const list = $('sessList');
@@ -677,15 +837,13 @@ rounds.push({
       recent.forEach(s=>{
         const row = document.createElement('div');
         row.className = 'sess';
-        let sym = '<div class="sym-dash"></div>';
-        if(s.beat==='yes') sym = '<div class="sym-circle"></div>';
-        else if(s.beat==='no') sym = '<div class="sym-square"></div>';
         let dots = '';
         for(let i=1;i<=5;i++){ dots += '<div class="dot'+(i<=s.intent?' on':'')+'"></div>'; }
+        const meta = (s.timeMin?s.timeMin+'m':'') + (s.quality?' \u00b7 Q'+s.quality:'');
         row.innerHTML =
-          '<div class="symbol">'+sym+'</div>'+
+          '<div class="symbol"><div class="sym-circle"></div></div>'+
           '<div class="sess-body">'+
-            '<div class="sess-top"><div class="sess-focus">'+s.focus+'</div><div class="sess-date">'+fmtDate(s.date)+'</div></div>'+
+            '<div class="sess-top"><div class="sess-focus">'+s.focus+'</div><div class="sess-date">'+fmtDate(s.date)+(meta?' \u00b7 '+meta:'')+'</div></div>'+
             (s.note ? '<div class="sess-note">'+escapeHtml(s.note)+'</div>' : '')+
           '</div>'+
           '<div class="sess-intent">'+dots+'</div>';
@@ -702,14 +860,18 @@ rounds.push({
       recentRounds.forEach(r=>{
         const row = document.createElement('div');
         row.className = 'round';
+        const wkLabel = r.weakness ? (WEAKNESS_LABELS[r.weakness]||r.weakness) : '';
+        const t5Label = (r.tiger5Total!==undefined && r.tiger5Total!==null) ? 'T5: '+r.tiger5Total : '';
         row.innerHTML =
           '<div class="score">'+r.score+'</div>'+
-          '<div class="round-body"><div class="round-date">'+fmtDate(r.date)+'</div>'+
+          '<div class="round-body"><div class="round-date">'+fmtDate(r.date)+(wkLabel?' \u00b7 '+wkLabel:'')+(t5Label?' \u00b7 '+t5Label:'')+'</div>'+
           (r.note ? '<div class="round-note">'+escapeHtml(r.note)+'</div>' : '')+'</div>';
         row.addEventListener('click', ()=> openRoundSheet(r));
         rl.appendChild(row);
       });
     }
+
+    renderT5Mini();
   }
 
   function escapeHtml(s){
@@ -722,27 +884,16 @@ rounds.push({
   }
 
   // ---- Log sheet logic ----
-  let focusVal = null, beatVal = null, intentVal = null;
-let qualityVal = null, timeVal = null;
-  document.querySelectorAll('#qualityRow .intent-opt').forEach(c=>{
-  c.addEventListener('click', ()=>{
-    document.querySelectorAll('#qualityRow .intent-opt').forEach(x=>x.classList.remove('sel'));
-    c.classList.add('sel');
-    qualityVal = +c.dataset.v;
-    validateForm();
-  });
-});
-  document.querySelectorAll('#drillChips .chip').forEach(c=>{
-  c.addEventListener('click', ()=>{
-    $('noteInput').value = c.dataset.v;
-  });
-});
+  let focusVal = null, intentVal = null, qualityVal = null, timeVal = null;
 
   function resetLogForm(){
-    focusVal = null; beatVal = null; intentVal = null;
+    focusVal = null; intentVal = null; qualityVal = null; timeVal = null;
     document.querySelectorAll('#focusChips .chip').forEach(c=>c.classList.remove('sel'));
-    document.querySelectorAll('#beatToggle .opt').forEach(c=>c.classList.remove('sel'));
     document.querySelectorAll('#intentRow .intent-opt').forEach(c=>c.classList.remove('sel'));
+    document.querySelectorAll('#qualityRow .intent-opt').forEach(c=>c.classList.remove('sel'));
+    document.querySelectorAll('#timeChips .chip').forEach(c=>c.classList.remove('sel'));
+    $('timeCustom').style.display = 'none';
+    $('timeCustom').value = '';
     $('noteInput').value = '';
     $('deleteSession').style.display = 'none';
     editingSessionId = null;
@@ -753,10 +904,19 @@ let qualityVal = null, timeVal = null;
     resetLogForm();
     if(existing){
       editingSessionId = existing.id;
-      focusVal = existing.focus; beatVal = existing.beat; intentVal = existing.intent;
+      focusVal = existing.focus; intentVal = existing.intent;
+      qualityVal = existing.quality || null; timeVal = existing.timeMin || null;
       document.querySelectorAll('#focusChips .chip').forEach(c=>{ if(c.dataset.v===focusVal) c.classList.add('sel'); });
-      document.querySelectorAll('#beatToggle .opt').forEach(c=>{ if(c.dataset.v===beatVal) c.classList.add('sel'); });
       document.querySelectorAll('#intentRow .intent-opt').forEach(c=>{ if(+c.dataset.v===intentVal) c.classList.add('sel'); });
+      document.querySelectorAll('#qualityRow .intent-opt').forEach(c=>{ if(+c.dataset.v===qualityVal) c.classList.add('sel'); });
+      if(timeVal){
+        const preset = document.querySelector('#timeChips .chip[data-v="'+timeVal+'"]');
+        if(preset){ preset.classList.add('sel'); }
+        else{
+          document.querySelector('#timeChips .chip[data-v="other"]').classList.add('sel');
+          $('timeCustom').style.display = 'block'; $('timeCustom').value = timeVal;
+        }
+      }
       $('noteInput').value = existing.note||'';
       $('deleteSession').style.display = 'block';
     } else if(prefill){
@@ -769,8 +929,7 @@ let qualityVal = null, timeVal = null;
   }
 
   function validateForm(){
-  timeVal = +$('timeInput').value;
-$('saveSession').disabled = !(focusVal && beatVal && intentVal && qualityVal && timeVal);
+    $('saveSession').disabled = !(focusVal && intentVal && qualityVal && timeVal);
   }
 
   document.querySelectorAll('#focusChips .chip').forEach(c=>{
@@ -779,17 +938,36 @@ $('saveSession').disabled = !(focusVal && beatVal && intentVal && qualityVal && 
       c.classList.add('sel'); focusVal = c.dataset.v; validateForm();
     });
   });
-  document.querySelectorAll('#beatToggle .opt').forEach(c=>{
-    c.addEventListener('click', ()=>{
-      document.querySelectorAll('#beatToggle .opt').forEach(x=>x.classList.remove('sel'));
-      c.classList.add('sel'); beatVal = c.dataset.v; validateForm();
-    });
-  });
   document.querySelectorAll('#intentRow .intent-opt').forEach(c=>{
     c.addEventListener('click', ()=>{
       document.querySelectorAll('#intentRow .intent-opt').forEach(x=>x.classList.remove('sel'));
       c.classList.add('sel'); intentVal = +c.dataset.v; validateForm();
     });
+  });
+  document.querySelectorAll('#qualityRow .intent-opt').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('#qualityRow .intent-opt').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel'); qualityVal = +c.dataset.v; validateForm();
+    });
+  });
+  document.querySelectorAll('#timeChips .chip').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('#timeChips .chip').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel');
+      if(c.dataset.v==='other'){
+        $('timeCustom').style.display = 'block';
+        timeVal = $('timeCustom').value ? +$('timeCustom').value : null;
+        $('timeCustom').focus();
+      } else {
+        $('timeCustom').style.display = 'none';
+        timeVal = +c.dataset.v;
+      }
+      validateForm();
+    });
+  });
+  $('timeCustom').addEventListener('input', e=>{
+    timeVal = e.target.value ? +e.target.value : null;
+    validateForm();
   });
 
   $('openLog').addEventListener('click', ()=>{ loggingFromAssignment = false; openLogSheet(null); });
@@ -800,24 +978,10 @@ $('saveSession').disabled = !(focusVal && beatVal && intentVal && qualityVal && 
     const wasNewFromAssignment = !editingSessionId && loggingFromAssignment;
     if(editingSessionId){
       const s = sessions.find(x=>x.id===editingSessionId);
-      s.focus=focusVal; s.beat=beatVal; s.intent=intentVal; s.note=$('noteInput').value.trim();
+      s.focus=focusVal; s.intent=intentVal; s.quality=qualityVal; s.timeMin=timeVal; s.note=$('noteInput').value.trim();
     } else {
-     sessions.push({
-  id: Date.now(),
-  date: todayISO(),
-  focus: focusVal,
-  beat: beatVal,
-  intent: intentVal,
-  quality: qualityVal,
-  time: +$('timeInput').value,
-  note: $('noteInput').value.trim()
-}<div class="field-label">Tiger 5</div>
-
-<div class="num-row"><input id="t3putt" type="number" placeholder="3-putts"></div>
-<div class="num-row"><input id="tdoubles" type="number" placeholder="Doubles+"></div>
-<div class="num-row"><input id="tpen" type="number" placeholder="Penalty strokes"></div>
-<div class="num-row"><input id="t150" type="number" placeholder="Bogeys <150y"></div>
-<div class="num-row"><input id="t100" type="number" placeholder="Missed <100y"></div>
+      sessions.push({ id: Date.now(), date: todayISO(), focus: focusVal, intent: intentVal, quality: qualityVal, timeMin: timeVal, note: $('noteInput').value.trim() });
+    }
     await saveSessions();
     $('logOverlay').classList.remove('show');
     loggingFromAssignment = false;
@@ -839,19 +1003,74 @@ $('saveSession').disabled = !(focusVal && beatVal && intentVal && qualityVal && 
   });
 
   // ---- Round sheet logic ----
+  const WEAKNESS_LABELS = { 'Full Swing':'Driving', 'Wedges':'Approach/Wedges', 'Short Game':'Short Game', 'Putting':'Putting', 'Course Sim':'Course Mgmt/Mental' };
+  // Maps each Tiger 5 category to the practice focus it should nudge toward
+  const T5_TO_FOCUS = { doubles:'Full Swing', bogeyInside150:'Wedges', threePutts:'Putting', missedUpDown:'Short Game', penalties:'Full Swing' };
+  const T5_KEYS = ['doubles','bogeyInside150','threePutts','missedUpDown','penalties'];
+  let roundWeaknessVal = null;
+  let tiger5 = { doubles:0, bogeyInside150:0, threePutts:0, missedUpDown:0, penalties:0 };
+  let weaknessManuallySet = false;
+
+  function resetTiger5(){
+    tiger5 = { doubles:0, bogeyInside150:0, threePutts:0, missedUpDown:0, penalties:0 };
+    renderTiger5();
+  }
+  function renderTiger5(){
+    let total = 0;
+    T5_KEYS.forEach(k=>{
+      total += tiger5[k];
+      const row = document.querySelector('.t5-row[data-k="'+k+'"] .t5-val');
+      if(row) row.textContent = tiger5[k];
+    });
+    $('t5Total').textContent = total;
+  }
+  document.querySelectorAll('.t5-row').forEach(row=>{
+    const k = row.dataset.k;
+    row.querySelector('.t5-plus').addEventListener('click', ()=>{
+      tiger5[k]++; renderTiger5(); maybeAutoSuggestWeakness();
+    });
+    row.querySelector('.t5-minus').addEventListener('click', ()=>{
+      tiger5[k] = Math.max(0, tiger5[k]-1); renderTiger5(); maybeAutoSuggestWeakness();
+    });
+  });
+  function maybeAutoSuggestWeakness(){
+    if(weaknessManuallySet) return;
+    let topKey = null, topVal = 0;
+    T5_KEYS.forEach(k=>{ if(tiger5[k] > topVal){ topVal = tiger5[k]; topKey = k; } });
+    if(topKey && topVal > 0){
+      const focus = T5_TO_FOCUS[topKey];
+      roundWeaknessVal = focus;
+      document.querySelectorAll('#roundWeaknessChips .chip').forEach(c=>{ c.classList.toggle('sel', c.dataset.v===focus); });
+    }
+  }
+
   function openRoundSheet(existing){
     editingRoundId = null;
+    roundWeaknessVal = null;
+    weaknessManuallySet = false;
     $('roundScore').value = '';
     $('roundNote').value = '';
+    resetTiger5();
+    document.querySelectorAll('#roundWeaknessChips .chip').forEach(c=>c.classList.remove('sel'));
     $('deleteRound').style.display = 'none';
     if(existing){
       editingRoundId = existing.id;
       $('roundScore').value = existing.score;
       $('roundNote').value = existing.note||'';
+      roundWeaknessVal = existing.weakness || null;
+      weaknessManuallySet = true;
+      if(existing.tiger5){ tiger5 = Object.assign({doubles:0,bogeyInside150:0,threePutts:0,missedUpDown:0,penalties:0}, existing.tiger5); renderTiger5(); }
+      document.querySelectorAll('#roundWeaknessChips .chip').forEach(c=>{ if(c.dataset.v===roundWeaknessVal) c.classList.add('sel'); });
       $('deleteRound').style.display = 'block';
     }
     $('roundOverlay').classList.add('show');
   }
+  document.querySelectorAll('#roundWeaknessChips .chip').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('#roundWeaknessChips .chip').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel'); roundWeaknessVal = c.dataset.v; weaknessManuallySet = true;
+    });
+  });
   $('addRound').addEventListener('click', ()=> openRoundSheet(null));
   $('closeRound').addEventListener('click', ()=> $('roundOverlay').classList.remove('show'));
   $('roundOverlay').addEventListener('click', e=>{ if(e.target.id==='roundOverlay') $('roundOverlay').classList.remove('show'); });
@@ -859,16 +1078,27 @@ $('saveSession').disabled = !(focusVal && beatVal && intentVal && qualityVal && 
   $('saveRound').addEventListener('click', async ()=>{
     const score = parseInt($('roundScore').value,10);
     if(!score) return;
+    const t5total = T5_KEYS.reduce((a,k)=>a+tiger5[k],0);
     if(editingRoundId){
       const r = rounds.find(x=>x.id===editingRoundId);
-      r.score = score; r.note = $('roundNote').value.trim();
+      r.score = score; r.note = $('roundNote').value.trim(); r.weakness = roundWeaknessVal;
+      r.tiger5 = Object.assign({}, tiger5); r.tiger5Total = t5total;
     } else {
-      rounds.push({ id: Date.now(), date: todayISO(), score: score, note: $('roundNote').value.trim() });
+      rounds.push({ id: Date.now(), date: todayISO(), score: score, note: $('roundNote').value.trim(), weakness: roundWeaknessVal, tiger5: Object.assign({}, tiger5), tiger5Total: t5total });
     }
     await saveRounds();
     $('roundOverlay').classList.remove('show');
+    if(roundWeaknessVal){
+      assignFilter = roundWeaknessVal;
+      currentAssignment = pickAssignment(currentAssignment);
+      await saveAssignment();
+      await saveAssignFilter();
+      renderAssignment();
+      showToast('Round saved. Focus set to '+(WEAKNESS_LABELS[roundWeaknessVal]||roundWeaknessVal)+'.');
+    } else {
+      showToast('Round saved.');
+    }
     render();
-    showToast('Round saved.');
   });
   $('deleteRound').addEventListener('click', async ()=>{
     rounds = rounds.filter(r=>r.id!==editingRoundId);
@@ -877,6 +1107,109 @@ $('saveSession').disabled = !(focusVal && beatVal && intentVal && qualityVal && 
     render();
     showToast('Round deleted.');
   });
+
+  // ---- Tiger 5 Dashboard ----
+  const T5_LABELS = { doubles:'Doubles+', bogeyInside150:'Bogeys <150y', threePutts:'3-Putts', missedUpDown:'Missed Up&Down', penalties:'Penalties' };
+
+  function t5Aggregate(){
+    const withT5 = rounds.filter(r=>r.tiger5);
+    const totals = { doubles:0, bogeyInside150:0, threePutts:0, missedUpDown:0, penalties:0 };
+    withT5.forEach(r=>{ T5_KEYS.forEach(k=>{ totals[k] += (r.tiger5[k]||0); }); });
+    const n = withT5.length || 1;
+    const avgs = {}; T5_KEYS.forEach(k=>{ avgs[k] = totals[k]/n; });
+    let worstKey = T5_KEYS[0];
+    T5_KEYS.forEach(k=>{ if(avgs[k] > avgs[worstKey]) worstKey = k; });
+    return { withT5, totals, avgs, worstKey, count: withT5.length };
+  }
+
+  function renderT5Mini(){
+    const card = $('t5MiniCard');
+    const { avgs, worstKey, count } = t5Aggregate();
+    if(count === 0){
+      card.innerHTML = '<div class="t5-empty">Log a round with Tiger 5 stats to see your breakdown here.</div>';
+      card.onclick = null;
+      return;
+    }
+    const maxAvg = Math.max(...T5_KEYS.map(k=>avgs[k]), 0.01);
+    card.innerHTML =
+      '<div class="t5-mini-top">'+
+        '<div><div class="t5-mini-worst">'+T5_LABELS[worstKey]+'</div><div class="t5-mini-sub">your biggest leak &middot; '+avgs[worstKey].toFixed(1)+'/round avg</div></div>'+
+        '<div class="t5-mini-arrow">&#8250;</div>'+
+      '</div>'+
+      '<div class="t5-mini-bars">'+
+        T5_KEYS.map(k=>{
+          const h = Math.max(6, Math.round((avgs[k]/maxAvg)*34));
+          return '<div class="t5-mini-bar-col"><div class="t5-mini-bar'+(k===worstKey?' worst':'')+'" style="height:'+h+'px;"></div><div class="t5-mini-lbl">'+T5_LABELS[k].split(' ')[0]+'</div></div>';
+        }).join('')+
+      '</div>';
+    card.onclick = openT5Dashboard;
+  }
+
+  function openT5Dashboard(){
+    const { avgs, totals, worstKey, count } = t5Aggregate();
+    const body = $('t5DashBody');
+    if(count === 0){
+      body.innerHTML = '<div class="t5-empty" style="padding:20px 0;">No rounds with Tiger 5 stats yet. Log a round to start tracking.</div>';
+      $('t5DashOverlay').classList.add('show');
+      return;
+    }
+    const maxAvg = Math.max(...T5_KEYS.map(k=>avgs[k]), 0.01);
+    const sortedKeys = [...T5_KEYS].sort((a,b)=>avgs[b]-avgs[a]);
+    const avgScore = (rounds.reduce((a,r)=>a+r.score,0)/rounds.length).toFixed(1);
+    const avgT5Total = (totals.doubles+totals.bogeyInside150+totals.threePutts+totals.missedUpDown+totals.penalties)/count;
+
+    let html = '';
+    html += '<div class="t5-summary-row">'+
+      '<div class="t5-summary-stat"><div class="num">'+count+'</div><div class="lbl">rounds tracked</div></div>'+
+      '<div class="t5-summary-stat"><div class="num">'+avgScore+'</div><div class="lbl">avg score</div></div>'+
+      '<div class="t5-summary-stat"><div class="num">'+avgT5Total.toFixed(1)+'</div><div class="lbl">avg Tiger 5 total</div></div>'+
+    '</div>';
+
+    html += '<div class="field-label">Score-killers, worst to best</div>';
+    sortedKeys.forEach(k=>{
+      const pct = Math.max(4, Math.round((avgs[k]/maxAvg)*100));
+      html += '<div class="t5-bar-row">'+
+        '<div class="t5-bar-row-top"><span class="nm">'+T5_LABELS[k]+'</span><span class="val">'+avgs[k].toFixed(1)+'/round</span></div>'+
+        '<div class="t5-bar-track"><div class="t5-bar-fill'+(k===worstKey?' worst':'')+'" style="width:'+pct+'%;"></div></div>'+
+      '</div>';
+    });
+
+    const recentRounds = [...rounds].sort((a,b)=>a.date.localeCompare(b.date)).slice(-8);
+    if(recentRounds.length){
+      const maxScore = Math.max(...recentRounds.map(r=>r.score));
+      const minScore = Math.min(...recentRounds.map(r=>r.score));
+      const range = Math.max(1, maxScore-minScore);
+      html += '<div class="field-label">Score trend (last '+recentRounds.length+')</div>';
+      html += '<div class="score-spark">'+recentRounds.map(r=>{
+        const h = Math.max(6, Math.round(((r.score-minScore)/range)*54)+6);
+        return '<div class="score-spark-col"><div class="score-spark-bar" style="height:'+h+'px;"></div><div class="score-spark-lbl">'+r.score+'</div></div>';
+      }).join('')+'</div>';
+    }
+
+    const focus = T5_TO_FOCUS[worstKey];
+    const focusDrills = DRILL_POOL.filter(d=>d.focus===focus).sort((a,b)=>b.w-a.w).slice(0,3);
+    html += '<div class="field-label">Recommended focus</div>';
+    html += '<div class="t5-drill-focus-tag">'+focus+' &middot; driven by '+T5_LABELS[worstKey]+'</div>';
+    focusDrills.forEach(d=>{
+      html += '<div class="drill-item"><div class="dn">'+d.name+'</div><div class="dt">'+d.text+'</div></div>';
+    });
+    html += '<button class="t5-set-focus-btn" id="t5SetFocusBtn">Set Today\u2019s Assignment to '+focus+'</button>';
+
+    body.innerHTML = html;
+    $('t5SetFocusBtn').addEventListener('click', async ()=>{
+      assignFilter = focus;
+      currentAssignment = pickAssignment(currentAssignment);
+      await saveAssignment();
+      await saveAssignFilter();
+      renderAssignment();
+      $('t5DashOverlay').classList.remove('show');
+      showToast('Assignment set to '+focus+'.');
+    });
+
+    $('t5DashOverlay').classList.add('show');
+  }
+  $('closeT5Dash').addEventListener('click', ()=> $('t5DashOverlay').classList.remove('show'));
+  $('t5DashOverlay').addEventListener('click', e=>{ if(e.target.id==='t5DashOverlay') $('t5DashOverlay').classList.remove('show'); });
 
   // ---- Priority ----
   let priorityDebounce;
@@ -899,6 +1232,28 @@ $('saveSession').disabled = !(focusVal && beatVal && intentVal && qualityVal && 
     $('settingsOverlay').classList.remove('show');
     render();
     showToast('All data cleared.');
+  });
+
+  // ---- Drill library accordion ----
+  function renderDrillLibrary(){
+    const body = $('drillAccBody');
+    let html = '';
+    FOCUS_LIST.forEach(f=>{
+      const items = DRILL_POOL.filter(d=>d.focus===f);
+      if(!items.length) return;
+      html += '<div class="drill-group-title">'+f+'</div>';
+      items.forEach(d=>{
+        html += '<div class="drill-item"><div class="dn">'+d.name+'</div><div class="dt">'+d.text+'</div></div>';
+      });
+    });
+    body.innerHTML = html;
+  }
+  $('drillAccHead').addEventListener('click', ()=>{
+    const head = $('drillAccHead'), body = $('drillAccBody');
+    const opening = !body.classList.contains('open');
+    body.classList.toggle('open');
+    head.classList.toggle('open');
+    if(opening && !body.dataset.filled){ renderDrillLibrary(); body.dataset.filled = '1'; }
   });
 
   loadAll();
