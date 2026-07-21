@@ -400,7 +400,19 @@
     <div class="sheet-head"><h2>Log a Round</h2><button class="sheet-close" id="closeRound">&times;</button></div>
     <div class="field-label">Score</div>
     <div class="num-row"><input id="roundScore" type="number" placeholder="e.g. 76"></div>
-    <div class="field-label">Biggest takeaway</div>
+rounds.push({
+  id: Date.now(),
+  date: todayISO(),
+  score: score,
+  note: $('roundNote').value.trim(),
+  t5: {
+    t3: +$('t3putt').value || 0,
+    dbl: +$('tdoubles').value || 0,
+    pen: +$('tpen').value || 0,
+    y150: +$('t150').value || 0,
+    y100: +$('t100').value || 0
+  }
+});
     <textarea class="note-input" id="roundNote" rows="2" placeholder="What cost you strokes / what's the priority now?"></textarea>
     <button class="save-btn" id="saveRound">Save round</button>
     <button class="del-btn" id="deleteRound" style="display:none;">Delete this round</button>
