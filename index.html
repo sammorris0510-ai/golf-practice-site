@@ -662,7 +662,10 @@ rounds.push({
     $('statsRow').innerHTML =
       '<div class="stat"><div class="num">'+monthSessions.length+'</div><div class="lbl">sessions logged</div></div>'+
       '<div class="stat"><div class="num">'+beatRate+'%</div><div class="lbl">pressure drills beaten</div></div>'+
-      '<div class="stat"><div class="num">'+avgIntent+'</div><div class="lbl">avg intent (1&ndash;5)</div></div>';
+'<div class="stat"><div class="num">'+avgIntent+'</div><div class="lbl">avg intent</div></div>'+
+'<div class="stat"><div class="num">'+avgQuality+'</div><div class="lbl">quality</div></div>'+
+'<div class="stat"><div class="num">'+avgTime+'m</div><div class="lbl">avg time</div></div>'+
+'<div class="stat"><div class="num">'+avg3+'</div><div class="lbl">3-putts</div></div>';
 
     // session list
     const list = $('sessList');
