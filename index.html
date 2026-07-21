@@ -748,7 +748,8 @@ let qualityVal = null, timeVal = null;
   }
 
   function validateForm(){
-    $('saveSession').disabled = !(focusVal && beatVal && intentVal);
+  timeVal = +$('timeInput').value;
+$('saveSession').disabled = !(focusVal && beatVal && intentVal && qualityVal && timeVal);
   }
 
   document.querySelectorAll('#focusChips .chip').forEach(c=>{
