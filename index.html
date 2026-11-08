@@ -1,5 +1,4 @@
-
-    --ink:#26<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -158,6 +157,19 @@
   }
   .game-plan-box .gp-text{font-size:12.5px;line-height:1.5;color:var(--ink);white-space:pre-wrap;}
 
+  .sched-row{
+    display:flex;gap:12px;align-items:center;background:var(--white);border:1px solid var(--line);
+    border-radius:9px;padding:11px 13px;margin-bottom:7px;
+  }
+  .sched-time{font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;color:var(--fairway);width:66px;flex-shrink:0;}
+  .sched-body{flex:1;}
+  .sched-name{font-size:13.5px;font-weight:600;}
+  .sched-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+  .sched-row.tee{background:var(--fairway);border-color:var(--fairway);}
+  .sched-row.tee .sched-time{color:#fff;}
+  .sched-row.tee .sched-name{color:#fff;}
+  .sched-row.tee .sched-sub{color:#D7E6DA;}
+
   .pb-grid{display:flex;flex-wrap:wrap;gap:10px;}
   .pb-tile{
     flex:1 1 calc(50% - 5px);min-width:130px;background:var(--white);border:1px solid var(--line);
@@ -281,6 +293,24 @@
   }
   .drill-item .dn{font-size:13.5px;font-weight:600;margin-bottom:2px;}
   .drill-item .dt{font-size:12px;color:var(--muted);line-height:1.4;}
+
+  /* Tournament Results */
+  .tr-mini-card{
+    background:var(--white);border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;
+  }
+  .tr-mini-top{display:flex;justify-content:space-between;align-items:center;}
+  .tr-mini-name{font-family:'Oswald',sans-serif;font-weight:600;font-size:14px;color:var(--fairway);}
+  .tr-mini-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+  .tr-mini-arrow{font-size:13px;color:var(--muted);}
+  .tr-item{
+    background:var(--white);border:1px solid var(--line);border-radius:9px;padding:11px 13px;margin-bottom:8px;
+  }
+  .tr-item-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+  .tr-item-name{font-family:'Oswald',sans-serif;font-weight:600;font-size:14px;}
+  .tr-item-score{font-family:'Oswald',sans-serif;font-weight:700;font-size:18px;color:var(--fairway);}
+  .tr-item-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+  .tr-item-stats{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;}
+  .tr-item-stat{font-size:10px;color:var(--muted);background:var(--paper-2);padding:3px 8px;border-radius:10px;}
 
   /* Tiger 5 Dashboard */
   .t5-mini-card{
@@ -440,6 +470,7 @@
   </div>
 
   <div class="event-row" id="eventRow"></div>
+  <button class="build-session-btn" id="openScheduleBtn" style="display:none;margin-bottom:14px;">View Day-of Schedule</button>
 
   <div class="assign-card" id="assignCard"></div>
   <button class="build-session-btn" id="openSessionBuilder">Build a Full Session</button>
@@ -481,11 +512,19 @@
   <div class="sec-title" style="margin-top:26px;">Personal Bests</div>
   <div class="pb-grid" id="pbGrid"></div>
 
+  <div class="sec-title" style="margin-top:26px;">Tournament Results</div>
+  <div class="tr-mini-card" id="trMiniCard"></div>
+
   <div class="sec-title" style="margin-top:26px;">Tiger 5 Dashboard</div>
   <div class="t5-mini-card" id="t5MiniCard"></div>
 
   <div class="sec-title" style="margin-top:26px;">Drill library</div>
-  <div class="accordion-head" id="drillAccHead">
+  <div class="accordion-head" id="indoorAccHead">
+    <span class="tt">Indoor Drills <span style="font-weight:400;color:var(--muted);font-size:11px;">active drills &middot; short putts &middot; speed stick</span></span>
+    <span class="chev">&#9660;</span>
+  </div>
+  <div class="accordion-body" id="indoorAccBody"></div>
+  <div class="accordion-head" id="drillAccHead" style="margin-top:8px;">
     <span class="tt">Example Drills</span>
     <span class="chev">&#9660;</span>
   </div>
@@ -498,6 +537,23 @@
     <div class="sheet-head"><h2>Tournament Warm-up</h2><button class="sheet-close" id="closeWarmup">&times;</button></div>
     <div id="warmupPlanNote" style="display:none;"></div>
     <div id="warmupStages"></div>
+  </div>
+</div>
+
+<!-- Day-of Schedule Sheet -->
+<div class="overlay" id="scheduleOverlay">
+  <div class="sheet">
+    <div class="sheet-head"><h2>Day-of Schedule</h2><button class="sheet-close" id="closeSchedule">&times;</button></div>
+    <div id="scheduleBody"></div>
+  </div>
+</div>
+
+<!-- RYP Speed Workout Sheet -->
+<div class="overlay" id="speedOverlay">
+  <div class="sheet">
+    <div class="sheet-head"><h2>Speed Workout</h2><button class="sheet-close" id="closeSpeed">&times;</button></div>
+    <div id="speedBody"></div>
+    <button class="save-btn" id="logSpeedBtn">Log this session</button>
   </div>
 </div>
 
@@ -526,6 +582,23 @@
     <div class="num-row"><input id="eventDateInput" type="date"></div>
     <div class="field-label">Tournament / course <span style="text-transform:none;letter-spacing:0;">(optional)</span></div>
     <div class="num-row"><input id="eventNameInput" type="text" placeholder="e.g. State Junior at Pine Hollow"></div>
+    <div class="field-label">Tee time <span style="text-transform:none;letter-spacing:0;">(optional \u2014 enables the day-of schedule)</span></div>
+    <div class="num-row"><input id="eventTeeTimeInput" type="time"></div>
+    <div class="field-label">Travel time to course</div>
+    <div class="chips" id="eventTravelChips">
+      <div class="chip" data-v="15">15m</div>
+      <div class="chip" data-v="30">30m</div>
+      <div class="chip" data-v="45">45m</div>
+      <div class="chip" data-v="60">60m</div>
+      <div class="chip" data-v="90">90m</div>
+    </div>
+    <div class="field-label">Prep time at home <span style="text-transform:none;letter-spacing:0;">(shower, eat, pack)</span></div>
+    <div class="chips" id="eventPrepChips">
+      <div class="chip" data-v="30">30m</div>
+      <div class="chip" data-v="45">45m</div>
+      <div class="chip" data-v="60">60m</div>
+      <div class="chip" data-v="90">90m</div>
+    </div>
     <div class="field-label">Game plan <span style="text-transform:none;letter-spacing:0;">(club/line strategy \u2014 your yardage-book notes)</span></div>
     <textarea class="note-input" id="eventPlanInput" rows="4" placeholder="e.g. 3-wood off 1, 7, 14. Miss short of all back pins. Stay away from water left on 11. Play to fat side of every green."></textarea>
     <div style="font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.4;">
@@ -533,6 +606,14 @@
     </div>
     <button class="save-btn" id="saveEvent">Save</button>
     <button class="del-btn" id="clearEvent" style="display:none;">Clear event</button>
+  </div>
+</div>
+
+<!-- Tournament Results Sheet -->
+<div class="overlay" id="trOverlay">
+  <div class="sheet">
+    <div class="sheet-head"><h2>Tournament Results</h2><button class="sheet-close" id="closeTr">&times;</button></div>
+    <div id="trBody"></div>
   </div>
 </div>
 
@@ -555,6 +636,7 @@
       <div class="chip" data-v="Wedges">Wedges</div>
       <div class="chip" data-v="Short Game">Short Game</div>
       <div class="chip" data-v="Full Swing">Full Swing</div>
+      <div class="chip" data-v="Speed">Speed</div>
       <div class="chip" data-v="Course Sim">Course Sim</div>
     </div>
 
@@ -575,15 +657,6 @@
       <div class="chip" data-v="other">Other</div>
     </div>
     <input class="note-input" id="timeCustom" type="number" min="1" placeholder="Minutes" style="display:none;margin-top:8px;font-family:'Oswald',sans-serif;font-weight:600;">
-
-    <div class="field-label">Intent <span style="text-transform:none;letter-spacing:0;">(how locked-in were you)</span></div>
-    <div class="intent-row" id="intentRow">
-      <div class="intent-opt" data-v="1">1</div>
-      <div class="intent-opt" data-v="2">2</div>
-      <div class="intent-opt" data-v="3">3</div>
-      <div class="intent-opt" data-v="4">4</div>
-      <div class="intent-opt" data-v="5">5</div>
-    </div>
 
     <div class="field-label">Quality of practice <span style="text-transform:none;letter-spacing:0;">(how well it went)</span></div>
     <div class="intent-row" id="qualityRow">
@@ -606,6 +679,20 @@
 <div class="overlay" id="roundOverlay">
   <div class="sheet">
     <div class="sheet-head"><h2>Log a Round</h2><button class="sheet-close" id="closeRound">&times;</button></div>
+
+    <div class="field-label">Round type</div>
+    <div class="toggle3" id="roundTypeToggle">
+      <div class="opt none" data-v="practice">Practice</div>
+      <div class="opt beat" data-v="tournament">Tournament</div>
+    </div>
+
+    <div id="tournamentFields" style="display:none;">
+      <div class="field-label">Tournament name</div>
+      <div class="num-row"><input id="roundTourneyName" type="text" placeholder="e.g. State Junior Open"></div>
+      <div class="field-label">Finish <span style="text-transform:none;letter-spacing:0;">(optional)</span></div>
+      <div class="num-row"><input id="roundPlacement" type="text" placeholder="e.g. 3rd of 42"></div>
+    </div>
+
     <div class="field-label">Score</div>
     <div class="num-row"><input id="roundScore" type="number" placeholder="e.g. 76"></div>
 
@@ -876,7 +963,7 @@
       text:'Putt 100 putts today across mixed distances, tallying makes vs. misses. Target: 70% or better makes.' },
     { focus:'Putting', name:'Two-Putt Circuit', w:2,
       text:'9 lag putts from 30+ feet at 9 different holes \u2014 must two-putt or better every time. Any 3-putt restarts the circuit.' },
-    { focus:'Putting', name:'Must-Make Closer', w:1,
+    { focus:'Putting', name:'Must-Make Closer', w:1, indoor:true,
       text:'End every putting session with one must-make 4-footer. Miss it and you owe 10 more reps before you can leave.' },
     { focus:'Putting', name:'Breaking Putt Ladder', w:1,
       text:'6 putts on a single breaking green at increasing distances (3, 6, 9, 12, 15, 18 ft). Target: make the first 3 and 2-putt the rest.' },
@@ -916,16 +1003,59 @@
       text:'Hit two balls off the tee and on approach, always playing the worse of the two. Target: break 42 for 9 holes.' },
     { focus:'Course Sim', name:'Scramble the Range', w:1,
       text:'Simulate 9 holes entirely on the range using approximate yardages \u2014 play every shot as if it counts.' },
+
+    // Indoor: Full Swing active drills (turf + net, bands, towel)
+    { focus:'Full Swing', name:'2-Step Pump Swings', w:2, indoor:true, indoorOnly:true, band:true,
+      text:'2 steps into the swing with a pump. 8\u201310 reps, minimal break between sets. Standard: every rep finishes balanced \u2014 two off-balance reps in a row and you restart the set.' },
+    { focus:'Full Swing', name:'1-Step Pump Swings', w:2, indoor:true, indoorOnly:true, band:true,
+      text:'1 step into the swing with a pump. 8\u201310 reps, minimal break between sets. Standard: every rep finishes balanced \u2014 two off-balance reps in a row and you restart the set.' },
+    { focus:'Full Swing', name:'No-Step Pump Swings', w:2, indoor:true, indoorOnly:true, band:true,
+      text:'Pump, no step. 8\u201310 reps, minimal break between sets. Standard: every rep finishes balanced \u2014 two off-balance reps in a row and you restart the set.' },
+    { focus:'Full Swing', name:'Single-Leg Swings', w:2, indoor:true, indoorOnly:true, band:true,
+      text:'8\u201310 swings on each leg, minimal break between sets. Standard: hold the finish for a 2-count with no hop or reach.' },
+    { focus:'Full Swing', name:'Single-Hand Swings', w:2, indoor:true, indoorOnly:true, band:true,
+      text:'8\u201310 swings with one hand, then the other. Minimal break between sets. Standard: smooth and balanced on every rep.' },
+    { focus:'Full Swing', name:'Punching Band Drill', w:2, indoor:true, indoorOnly:true,
+      text:'Punching band drill, both ways. 8\u201310 reps each way, slow and controlled, minimal break between sets.' },
+    { focus:'Full Swing', name:'Towel Rips', w:2, indoor:true, indoorOnly:true,
+      text:'Towel rips, done actively: slow reps into a full shoulder turn. 8\u201310 reps. Standard: full shoulder turn on every rep.' },
+
+    // Indoor: Putting \u2014 short putts only (mat inclines at the end), mechanics focus
+    { focus:'Putting', name:'Sticks Under Arms', w:2, indoor:true, indoorOnly:true,
+      text:'Alignment sticks under your arms so your arms and shoulders move as one unit. 10 putts from 3 feet. Standard: the sticks stay put through the stroke on 8/10 \u2014 two drops in a row and you restart the set.' },
+    { focus:'Putting', name:'Balance Discs Under Arms', w:2, indoor:true, indoorOnly:true,
+      text:'Balance discs under your arms to keep your arms connected to your chest. 10 putts from 3 feet. Standard: the discs stay in place through the stroke on 8/10 \u2014 two drops in a row and you restart the set.' },
+    { focus:'Putting', name:'Putting Arc Gate', w:2, indoor:true, indoorOnly:true,
+      text:'Use alignment sticks to mark your putting arc: one just outside the path going back, one just outside the path going through. 10 putts from 3 feet. Standard: the putter never touches a stick on 8/10 and the ball starts on line.' },
+    { focus:'Putting', name:'Face-Contact Check', w:1, indoor:true, indoorOnly:true,
+      text:'Put impact tape or spray on your putter face. 10 putts from 3 feet. Standard: 8/10 marks inside the center of the face. Two off-center strikes in a row and you restart the set.' },
+    { focus:'Putting', name:'Gate Start-Line Test', w:2, indoor:true, indoorOnly:true,
+      text:'Set two tees just wider than your ball, 12 inches in front of it. 10 putts from 3 feet. Standard: 8/10 roll through the gate without touching a tee and drop.' },
+    { focus:'Putting', name:'Eyes-Closed Stroke Feel', w:1, indoor:true, indoorOnly:true,
+      text:'Set up, then close your eyes before you stroke. 10 putts from 3 feet. Call where the ball started (left, center, right) before you look. Standard: 7/10 calls match what happened.' },
+    { focus:'Putting', name:'Tempo Count Putts', w:1, indoor:true, indoorOnly:true,
+      text:'Metronome app, same count back and through. 10 putts from 3 feet. Standard: every stroke stays on the count. One off-count stroke restarts the set.' },
+    { focus:'Putting', name:'Short-Putt Countdown', w:2, indoor:true, indoorOnly:true,
+      text:'Make 5 from 2 feet, 4 from 3 feet, then 3 from 4 feet. Any miss sends you back to the start. Log how many attempts it took to finish.' },
+
+    // Speed \u2014 your full RYP stick workout, done the same way every time
+    { focus:'Speed', name:'RYP Speed Workout', w:3, indoor:true, workout:'speed',
+      text:'Full RYP stick workout, every time: heaviest to lightest, then lightest to heaviest. 2 step with pump, 1 step with pump, pump with no step, all of those again with a short finish, then 9-to-3 swings (P2 to P8) producing speed in the short end range. Repeat everything right-handed. 8\u201310 reps per set, minimal break between sets, 2 sets of everything. 1\u20132 times a week.' },
   ];
+  DRILL_POOL.forEach(d=>{ if(d.band) d.text += ' Pilates band around your knees whenever you can.'; });
   const WEIGHTED_POOL = DRILL_POOL.flatMap(d => Array(d.w).fill(d));
-  const FOCUS_LIST = ['Putting','Wedges','Short Game','Full Swing','Course Sim'];
+  const FOCUS_LIST = ['Putting','Wedges','Short Game','Full Swing','Speed','Course Sim'];
 
   let currentAssignment = null;
   let assignFilter = null; // null = "Surprise me" (full weighted pool); else a focus name
   let loggingFromAssignment = false;
+  let indoorMode = false; // net + turf + putting mat + speed stick only
   let nextEventDate = null; // ISO date string or null
   let nextEventName = '';
   let nextEventPlan = '';
+  let nextEventTeeTime = ''; // "HH:MM" or ''
+  let nextEventTravelMin = 30;
+  let nextEventPrepMin = 45;
 
   function daysUntilEvent(){
     if(!nextEventDate) return null;
@@ -940,19 +1070,27 @@
   // doubles up; inside a week, full-swing weight is cut back sharply. An
   // explicit focus pick (the golfer choosing "Full Swing" on purpose) is
   // always honored at full weight — this only steers the default.
+  function speedSessionsThisWeek(){
+    const wk = currentWeekKey();
+    return sessions.filter(x=>x.focus==='Speed' && weekKeyFor(x.date)===wk).length;
+  }
   function buildWeightedPool(focusFilter){
     const days = daysUntilEvent();
     const applyAdjust = (focusFilter === null && days !== null && days >= 0);
-    let pool = focusFilter ? DRILL_POOL.filter(d=>d.focus===focusFilter) : DRILL_POOL;
+    const base = indoorMode ? DRILL_POOL.filter(d=>d.indoor) : DRILL_POOL.filter(d=>!d.indoorOnly);
+    let pool = focusFilter ? base.filter(d=>d.focus===focusFilter) : base;
+    // The speed workout is a 1\u20132x/week session: once it's been done twice this week, stop offering it.
+    if(focusFilter !== 'Speed' && speedSessionsThisWeek() >= 2) pool = pool.filter(d=>d.focus!=='Speed');
+    if(!pool.length) pool = base;
     const weighted = [];
     pool.forEach(d=>{
       let w = d.w;
       if(applyAdjust){
         if(days <= 2){
-          if(d.focus === 'Full Swing') w = 0;
+          if(d.focus === 'Full Swing' || d.focus === 'Speed') w = 0;
           else if(d.focus === 'Course Sim') w = w * 2;
         } else if(days <= 6){
-          if(d.focus === 'Full Swing') w = Math.max(1, Math.round(w*0.4));
+          if(d.focus === 'Full Swing' || d.focus === 'Speed') w = Math.max(1, Math.round(w*0.4));
         }
       }
       for(let i=0;i<w;i++) weighted.push(d);
@@ -964,40 +1102,64 @@
     try{ const r = await STORE.get('nextEventDate'); nextEventDate = r ? r.value : null; }catch(e){ nextEventDate = null; }
     try{ const r = await STORE.get('nextEventName'); nextEventName = r ? r.value : ''; }catch(e){ nextEventName = ''; }
     try{ const r = await STORE.get('nextEventPlan'); nextEventPlan = r ? r.value : ''; }catch(e){ nextEventPlan = ''; }
+    try{ const r = await STORE.get('nextEventTeeTime'); nextEventTeeTime = r ? r.value : ''; }catch(e){ nextEventTeeTime = ''; }
+    try{ const r = await STORE.get('nextEventTravelMin'); nextEventTravelMin = r ? JSON.parse(r.value) : 30; }catch(e){ nextEventTravelMin = 30; }
+    try{ const r = await STORE.get('nextEventPrepMin'); nextEventPrepMin = r ? JSON.parse(r.value) : 45; }catch(e){ nextEventPrepMin = 45; }
     renderEventRow();
   }
   async function saveEvent(){
     try{ await STORE.set('nextEventDate', nextEventDate || ''); }catch(e){}
     try{ await STORE.set('nextEventName', nextEventName || ''); }catch(e){}
     try{ await STORE.set('nextEventPlan', nextEventPlan || ''); }catch(e){}
+    try{ await STORE.set('nextEventTeeTime', nextEventTeeTime || ''); }catch(e){}
+    try{ await STORE.set('nextEventTravelMin', JSON.stringify(nextEventTravelMin)); }catch(e){}
+    try{ await STORE.set('nextEventPrepMin', JSON.stringify(nextEventPrepMin)); }catch(e){}
   }
   function renderEventRow(){
     const days = daysUntilEvent();
     const row = $('eventRow');
     if(!nextEventDate || days === null || days < 0){
       row.innerHTML = '<span class="er-label">&#127942; No tournament set</span><span class="er-arrow">&#8250;</span>';
+      $('openScheduleBtn').style.display = 'none';
     } else {
       const soon = days <= 6;
       const dLabel = days === 0 ? 'today' : days === 1 ? 'tomorrow' : 'in '+days+'d';
       const nameStr = nextEventName ? nextEventName+' \u2014 ' : '';
       row.innerHTML = '<span class="er-label">&#127942; '+nameStr+fmtDate(nextEventDate)+'</span><span class="er-val'+(soon?' soon':'')+'">'+dLabel+(days<=2?' \u2014 sharpening mode':'')+'</span>';
+      $('openScheduleBtn').style.display = nextEventTeeTime ? 'block' : 'none';
     }
   }
   $('eventRow').addEventListener('click', ()=>{
     $('eventDateInput').value = nextEventDate || '';
     $('eventNameInput').value = nextEventName || '';
     $('eventPlanInput').value = nextEventPlan || '';
+    $('eventTeeTimeInput').value = nextEventTeeTime || '';
+    document.querySelectorAll('#eventTravelChips .chip').forEach(c=>c.classList.toggle('sel', +c.dataset.v===nextEventTravelMin));
+    document.querySelectorAll('#eventPrepChips .chip').forEach(c=>c.classList.toggle('sel', +c.dataset.v===nextEventPrepMin));
     $('clearEvent').style.display = nextEventDate ? 'block' : 'none';
     $('eventOverlay').classList.add('show');
   });
   $('closeEvent').addEventListener('click', ()=> $('eventOverlay').classList.remove('show'));
   $('eventOverlay').addEventListener('click', e=>{ if(e.target.id==='eventOverlay') $('eventOverlay').classList.remove('show'); });
+  document.querySelectorAll('#eventTravelChips .chip').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('#eventTravelChips .chip').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel'); nextEventTravelMin = +c.dataset.v;
+    });
+  });
+  document.querySelectorAll('#eventPrepChips .chip').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('#eventPrepChips .chip').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel'); nextEventPrepMin = +c.dataset.v;
+    });
+  });
   $('saveEvent').addEventListener('click', async ()=>{
     const v = $('eventDateInput').value;
     if(!v) return;
     nextEventDate = v;
     nextEventName = $('eventNameInput').value.trim();
     nextEventPlan = $('eventPlanInput').value.trim();
+    nextEventTeeTime = $('eventTeeTimeInput').value || '';
     await saveEvent();
     renderEventRow();
     $('eventOverlay').classList.remove('show');
@@ -1005,7 +1167,7 @@
     renderAssignment();
   });
   $('clearEvent').addEventListener('click', async ()=>{
-    nextEventDate = null; nextEventName = ''; nextEventPlan = '';
+    nextEventDate = null; nextEventName = ''; nextEventPlan = ''; nextEventTeeTime = '';
     await saveEvent();
     renderEventRow();
     $('eventOverlay').classList.remove('show');
@@ -1013,8 +1175,73 @@
     renderAssignment();
   });
 
+  // ---- Day-of Schedule ----
+  // Backward-plans the whole tournament morning from tee time: wake up, leave
+  // home, arrive at the course, then maps the same 5-stage warm-up routine
+  // onto real clock times so there's never a guess about when to start.
+  function fmtTime(d){
+    let h = d.getHours(), m = d.getMinutes();
+    const ampm = h>=12 ? 'PM' : 'AM';
+    h = h % 12; if(h===0) h = 12;
+    const mStr = m<10 ? '0'+m : ''+m;
+    return h+':'+mStr+' '+ampm;
+  }
+  function generateDaySchedule(){
+    if(!nextEventDate || !nextEventTeeTime) return null;
+    const [hh,mm] = nextEventTeeTime.split(':').map(Number);
+    const teeDate = new Date(nextEventDate+'T00:00:00');
+    teeDate.setHours(hh, mm, 0, 0);
+
+    const travel = nextEventTravelMin || 30;
+    const prep = nextEventPrepMin || 45;
+    const arrive = new Date(teeDate.getTime() - 75*60000);
+    const leaveHome = new Date(arrive.getTime() - travel*60000);
+    const wakeUp = new Date(leaveHome.getTime() - prep*60000);
+    const warmupStart = new Date(arrive.getTime() + 5*60000);
+
+    const items = [];
+    items.push({ time: wakeUp, name:'Wake up', sub:'Give yourself time \u2014 no rushing.' });
+    items.push({ time: leaveHome, name:'Leave home', sub: travel+' min drive to the course.' });
+    items.push({ time: arrive, name:'Arrive at course', sub:'Check in, drop your bag, look at the pin sheet.' });
+
+    let cursor = new Date(warmupStart);
+    WARMUP_STAGES.forEach(s=>{
+      items.push({ time: new Date(cursor), name: s.name, sub: s.timeMin+' min' });
+      cursor = new Date(cursor.getTime() + s.timeMin*60000);
+    });
+
+    items.push({ time: teeDate, name:'Tee off', sub: nextEventName || 'Tournament', tee:true });
+    return items;
+  }
+  function renderSchedule(){
+    const items = generateDaySchedule();
+    const body = $('scheduleBody');
+    if(!items){
+      body.innerHTML = '<div class="t5-empty" style="padding:20px 0;">Set a tee time in Next Tournament to generate your day-of schedule.</div>';
+      return;
+    }
+    body.innerHTML = items.map(it=>{
+      return '<div class="sched-row'+(it.tee?' tee':'')+'">'+
+        '<div class="sched-time">'+fmtTime(it.time)+'</div>'+
+        '<div class="sched-body"><div class="sched-name">'+escapeHtml(it.name)+'</div><div class="sched-sub">'+escapeHtml(it.sub)+'</div></div>'+
+      '</div>';
+    }).join('');
+  }
+  $('openScheduleBtn').addEventListener('click', ()=>{ renderSchedule(); $('scheduleOverlay').classList.add('show'); });
+  $('closeSchedule').addEventListener('click', ()=> $('scheduleOverlay').classList.remove('show'));
+  $('scheduleOverlay').addEventListener('click', e=>{ if(e.target.id==='scheduleOverlay') $('scheduleOverlay').classList.remove('show'); });
+
+  async function loadIndoor(){
+    try{ const r = await STORE.get('indoorMode'); indoorMode = r ? r.value === 'true' : false; }catch(e){ indoorMode = false; }
+  }
+  async function saveIndoor(){ try{ await STORE.set('indoorMode', indoorMode ? 'true' : 'false'); }catch(e){} }
+  function focusesForMode(){
+    return indoorMode ? FOCUS_LIST.filter(f=>DRILL_POOL.some(d=>d.focus===f && d.indoor)) : FOCUS_LIST.filter(f=>DRILL_POOL.some(d=>d.focus===f && !d.indoorOnly));
+  }
+
   async function loadAssignment(){
     try{ const r = await STORE.get('assignFilter'); assignFilter = r ? JSON.parse(r.value) : null; }catch(e){ assignFilter = null; }
+    if(assignFilter && !focusesForMode().includes(assignFilter)) assignFilter = null;
     let stored = null;
     try{ const r = await STORE.get('assignment'); stored = r ? JSON.parse(r.value) : null; }catch(e){ stored = null; }
     if(stored && stored.date === todayISO()){
@@ -1060,8 +1287,9 @@
     const modeNote = (days !== null && days >= 0 && days <= 6)
       ? ' <span class="tourney-note">\u00b7 T-'+days+'d: sharpening mode</span>' : '';
     const chipsHtml = '<div class="assign-filters">'+
+      '<div class="afchip'+(indoorMode?' sel':'')+'" id="indoorChip">&#127968; Indoor</div>'+
       '<div class="afchip'+(assignFilter===null?' sel':'')+'" data-f="">Surprise me</div>'+
-      FOCUS_LIST.map(f=>'<div class="afchip'+(assignFilter===f?' sel':'')+'" data-f="'+f+'">'+f+'</div>').join('')+
+      focusesForMode().map(f=>'<div class="afchip'+(assignFilter===f?' sel':'')+'" data-f="'+f+'">'+f+'</div>').join('')+
       '</div>';
     $('assignCard').innerHTML =
       '<div class="assign-eyebrow">Today\u2019s Assignment'+modeNote+'</div>'+
@@ -1069,11 +1297,21 @@
       '<div class="assign-tag">'+d.focus+'</div>'+
       '<div class="assign-name">'+d.name+'</div>'+
       '<div class="assign-text">'+d.text+'</div>'+
+      (d.workout==='speed' ? '<div class="assign-btns" style="margin-bottom:8px;"><div class="assign-btn" id="openSpeedBtn">Open workout checklist</div></div>' : '')+
       '<div class="assign-btns">'+
         '<div class="assign-btn" id="rerollBtn">New assignment</div>'+
         '<div class="assign-btn primary" id="logAssignBtn">Log result</div>'+
       '</div>';
-    document.querySelectorAll('.afchip').forEach(c=>{
+    if($('openSpeedBtn')) $('openSpeedBtn').addEventListener('click', openSpeedWorkout);
+    $('indoorChip').addEventListener('click', async ()=>{
+      indoorMode = !indoorMode;
+      if(assignFilter && !focusesForMode().includes(assignFilter)) assignFilter = null;
+      currentAssignment = pickAssignment(currentAssignment);
+      await saveIndoor(); await saveAssignment(); await saveAssignFilter();
+      renderAssignment();
+      showToast(indoorMode ? 'Indoor mode on \u2014 net, mat, and speed drills only.' : 'Indoor mode off.');
+    });
+    document.querySelectorAll('.afchip[data-f]').forEach(c=>{
       c.addEventListener('click', async ()=>{
         assignFilter = c.dataset.f || null;
         currentAssignment = pickAssignment(currentAssignment);
@@ -1089,7 +1327,7 @@
     });
     $('logAssignBtn').addEventListener('click', ()=>{
       loggingFromAssignment = true;
-      const suggestedType = currentAssignment.focus === 'Course Sim' ? 'Simulation' : 'Random';
+      const suggestedType = currentAssignment.focus === 'Course Sim' ? 'Simulation' : (currentAssignment.focus === 'Speed' ? 'Technical' : 'Random');
       openLogSheet(null, { focus: currentAssignment.focus, type: suggestedType, note: currentAssignment.name });
     });
   }
@@ -1110,7 +1348,71 @@
 
   function pickFrom(pool){ return pool[Math.floor(Math.random()*pool.length)]; }
 
+  function generateIndoorPlan(totalTime){
+    const second = totalTime >= 45;
+    const pct = second
+      ? { warmup: 0.10, skill: 0.40, putting: 0.30, move: 0.20 }
+      : { warmup: 0.15, skill: 0.50, putting: 0.35, move: 0 };
+    const stages = [];
+    stages.push({
+      label: 'Warm-up', name: 'Mat Putting Feel Warm-up', focus: 'Putting',
+      text: '10\u201315 easy short putts. No pressure \u2014 just stroke rhythm and a square face.',
+      timeMin: Math.max(5, Math.round(totalTime*pct.warmup))
+    });
+    const fsPool = buildWeightedPool('Full Swing');
+    const fs1 = pickFrom(fsPool);
+    stages.push({ label:'Skill Block', name:fs1.name, focus:'Full Swing', text:fs1.text, timeMin: Math.round(totalTime*pct.skill) });
+    const pt = pickFrom(buildWeightedPool('Putting'));
+    stages.push({ label:'Putting Block', name:pt.name, focus:'Putting', text:pt.text, timeMin: Math.round(totalTime*pct.putting) });
+    if(second){
+      const rest = fsPool.filter(d=>d.name!==fs1.name);
+      const fs2 = pickFrom(rest.length ? rest : fsPool);
+      stages.push({ label:'Movement Block', name:fs2.name, focus:'Full Swing', text:fs2.text, timeMin: Math.round(totalTime*pct.move) });
+    }
+    return { totalTime, stages };
+  }
+
+  // ---- RYP Speed Workout checklist ----
+  const SPEED_PASSES = ['Heaviest to lightest', 'Lightest to heaviest'];
+  const SPEED_MOVES = [
+    { name:'2 step with pump' },
+    { name:'1 step with pump' },
+    { name:'Pump, no step' },
+    { name:'All of the above with short finish' },
+    { name:'9 to 3 swings, P2 to P8', sub:'Producing speed in the short end range.' },
+    { name:'Everything again right-handed' },
+  ];
+  let speedDone = new Set();
+  function openSpeedWorkout(){ speedDone = new Set(); renderSpeedWorkout(); $('speedOverlay').classList.add('show'); }
+  function renderSpeedWorkout(){
+    let html = '<div class="game-plan-box"><div class="gp-label">Every time</div><div class="gp-text">8\u201310 reps per set, minimal break between sets, 2 sets of everything. 1\u20132 times a week.</div></div>';
+    SPEED_PASSES.forEach((pass,pi)=>{
+      html += '<div class="drill-group-title">Pass '+(pi+1)+' \u2014 '+pass+'</div>';
+      SPEED_MOVES.forEach((m,mi)=>{
+        const id = pi+'-'+mi;
+        const done = speedDone.has(id);
+        html += '<div class="plan-stage'+(done?' done':'')+'" data-id="'+id+'"><div class="ps-check">'+(done?'&#10003;':'')+'</div><div class="ps-body"><div class="ps-name">'+m.name+'</div>'+(m.sub?'<div class="ps-text">'+m.sub+'</div>':'')+'</div></div>';
+      });
+    });
+    $('speedBody').innerHTML = html;
+    $('speedBody').querySelectorAll('.plan-stage').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const id = el.dataset.id;
+        if(speedDone.has(id)) speedDone.delete(id); else speedDone.add(id);
+        renderSpeedWorkout();
+      });
+    });
+  }
+  $('closeSpeed').addEventListener('click', ()=> $('speedOverlay').classList.remove('show'));
+  $('speedOverlay').addEventListener('click', e=>{ if(e.target.id==='speedOverlay') $('speedOverlay').classList.remove('show'); });
+  $('logSpeedBtn').addEventListener('click', ()=>{
+    $('speedOverlay').classList.remove('show');
+    loggingFromAssignment = !!(currentAssignment && currentAssignment.workout==='speed');
+    openLogSheet(null, { focus:'Speed', type:'Technical', note:'RYP Speed Workout' });
+  });
+
   function generateSessionPlan(totalTime){
+    if(indoorMode) return generateIndoorPlan(totalTime);
     const includeTransfer = totalTime >= 45;
     const pct = includeTransfer
       ? { warmup: 0.10, skill: 0.35, pressure: 0.30, transfer: 0.25 }
@@ -1185,7 +1487,8 @@
 
   $('logPlanBtn').addEventListener('click', ()=>{
     if(!currentPlan) return;
-    const dominantFocus = currentPlan.stages[1].focus; // skill block
+    const skillStage = currentPlan.stages.find(s=>s.label==='Skill Block') || currentPlan.stages[1];
+    const dominantFocus = skillStage.focus; // skill block
     const includesTransfer = currentPlan.stages.some(s=>s.label==='Transfer');
     const type = includesTransfer ? 'Simulation' : 'Random';
     const note = 'Session Plan: ' + currentPlan.stages.map(s=>s.name).join(' \u2192 ');
@@ -1279,16 +1582,14 @@
     });
     const totalMin = monthSessions.reduce((a,s)=>a+(s.timeMin||0),0);
     const totalHrs = (totalMin/60).toFixed(1);
-    const avgIntent = monthSessions.length ? (monthSessions.reduce((a,s)=>a+s.intent,0)/monthSessions.length).toFixed(1) : '\u2014';
     const qualitySessions = monthSessions.filter(s=>s.quality);
     const avgQuality = qualitySessions.length ? (qualitySessions.reduce((a,s)=>a+s.quality,0)/qualitySessions.length).toFixed(1) : '\u2014';
-    const typedSessions = monthSessions.filter(s=>s.type);
+    const typedSessions = monthSessions.filter(s=>s.type && s.focus!=='Speed');
     const mixPct = typedSessions.length ? Math.round(100*typedSessions.filter(s=>s.type!=='Technical').length/typedSessions.length) : null;
     const mixColor = mixPct===null ? '' : (mixPct>=65 ? 'color:var(--turf);' : 'color:var(--flag);');
     $('statsRow').innerHTML =
       '<div class="stat"><div class="num">'+monthSessions.length+'</div><div class="lbl">sessions logged</div></div>'+
       '<div class="stat"><div class="num">'+totalHrs+'</div><div class="lbl">hours practiced</div></div>'+
-      '<div class="stat"><div class="num">'+avgIntent+'</div><div class="lbl">avg intent (1&ndash;5)</div></div>'+
       '<div class="stat"><div class="num">'+avgQuality+'</div><div class="lbl">avg quality (1&ndash;5)</div></div>'+
       '<div class="stat"><div class="num" style="'+mixColor+'">'+(mixPct===null?'\u2014':mixPct+'%')+'</div><div class="lbl">random/sim mix (aim 65%+)</div></div>';
 
@@ -1303,8 +1604,8 @@
         const row = document.createElement('div');
         row.className = 'sess';
         let dots = '';
-        for(let i=1;i<=5;i++){ dots += '<div class="dot'+(i<=s.intent?' on':'')+'"></div>'; }
-        const meta = (s.timeMin?s.timeMin+'m':'') + (s.type?' \u00b7 '+s.type:'') + (s.quality?' \u00b7 Q'+s.quality:'');
+        for(let i=1;i<=5;i++){ dots += '<div class="dot'+(i<=(s.quality||0)?' on':'')+'"></div>'; }
+        const meta = (s.timeMin?s.timeMin+'m':'') + (s.type?' \u00b7 '+s.type:'');
         row.innerHTML =
           '<div class="symbol"><div class="sym-circle"></div></div>'+
           '<div class="sess-body">'+
@@ -1328,15 +1629,17 @@
         const wkLabel = r.weakness ? (WEAKNESS_LABELS[r.weakness]||r.weakness) : '';
         const t5Label = (r.tiger5Total!==undefined && r.tiger5Total!==null) ? 'T5: '+r.tiger5Total : '';
         const cmLabel = r.commitment ? 'Commit: '+r.commitment+'/5' : '';
+        const tourneyLabel = r.isTournament ? ('&#127942; '+(r.tournamentName||'Tournament')) : '';
         row.innerHTML =
           '<div class="score">'+r.score+'</div>'+
-          '<div class="round-body"><div class="round-date">'+fmtDate(r.date)+(wkLabel?' \u00b7 '+wkLabel:'')+(t5Label?' \u00b7 '+t5Label:'')+(cmLabel?' \u00b7 '+cmLabel:'')+'</div>'+
+          '<div class="round-body"><div class="round-date">'+(tourneyLabel?tourneyLabel+' \u00b7 ':'')+fmtDate(r.date)+(wkLabel?' \u00b7 '+wkLabel:'')+(t5Label?' \u00b7 '+t5Label:'')+(cmLabel?' \u00b7 '+cmLabel:'')+'</div>'+
           (r.note ? '<div class="round-note">'+escapeHtml(r.note)+'</div>' : '')+'</div>';
         row.addEventListener('click', ()=> openRoundSheet(r));
         rl.appendChild(row);
       });
     }
 
+    renderTournamentMini();
     renderT5Mini();
     renderPersonalBests();
   }
@@ -1351,13 +1654,12 @@
   }
 
   // ---- Log sheet logic ----
-  let focusVal = null, typeVal = null, intentVal = null, qualityVal = null, timeVal = null;
+  let focusVal = null, typeVal = null, qualityVal = null, timeVal = null;
 
   function resetLogForm(){
-    focusVal = null; typeVal = null; intentVal = null; qualityVal = null; timeVal = null;
+    focusVal = null; typeVal = null; qualityVal = null; timeVal = null;
     document.querySelectorAll('#focusChips .chip').forEach(c=>c.classList.remove('sel'));
     document.querySelectorAll('#typeChips .chip').forEach(c=>c.classList.remove('sel'));
-    document.querySelectorAll('#intentRow .intent-opt').forEach(c=>c.classList.remove('sel'));
     document.querySelectorAll('#qualityRow .intent-opt').forEach(c=>c.classList.remove('sel'));
     document.querySelectorAll('#timeChips .chip').forEach(c=>c.classList.remove('sel'));
     $('timeCustom').style.display = 'none';
@@ -1372,11 +1674,10 @@
     resetLogForm();
     if(existing){
       editingSessionId = existing.id;
-      focusVal = existing.focus; typeVal = existing.type || null; intentVal = existing.intent;
+      focusVal = existing.focus; typeVal = existing.type || null;
       qualityVal = existing.quality || null; timeVal = existing.timeMin || null;
       document.querySelectorAll('#focusChips .chip').forEach(c=>{ if(c.dataset.v===focusVal) c.classList.add('sel'); });
       document.querySelectorAll('#typeChips .chip').forEach(c=>{ if(c.dataset.v===typeVal) c.classList.add('sel'); });
-      document.querySelectorAll('#intentRow .intent-opt').forEach(c=>{ if(+c.dataset.v===intentVal) c.classList.add('sel'); });
       document.querySelectorAll('#qualityRow .intent-opt').forEach(c=>{ if(+c.dataset.v===qualityVal) c.classList.add('sel'); });
       if(timeVal){
         const preset = document.querySelector('#timeChips .chip[data-v="'+timeVal+'"]');
@@ -1411,7 +1712,7 @@
   }
 
   function validateForm(){
-    $('saveSession').disabled = !(focusVal && typeVal && intentVal && qualityVal && timeVal);
+    $('saveSession').disabled = !(focusVal && typeVal && qualityVal && timeVal);
   }
 
   document.querySelectorAll('#typeChips .chip').forEach(c=>{
@@ -1425,12 +1726,6 @@
     c.addEventListener('click', ()=>{
       document.querySelectorAll('#focusChips .chip').forEach(x=>x.classList.remove('sel'));
       c.classList.add('sel'); focusVal = c.dataset.v; validateForm();
-    });
-  });
-  document.querySelectorAll('#intentRow .intent-opt').forEach(c=>{
-    c.addEventListener('click', ()=>{
-      document.querySelectorAll('#intentRow .intent-opt').forEach(x=>x.classList.remove('sel'));
-      c.classList.add('sel'); intentVal = +c.dataset.v; validateForm();
     });
   });
   document.querySelectorAll('#qualityRow .intent-opt').forEach(c=>{
@@ -1467,9 +1762,9 @@
     const wasNewFromAssignment = !editingSessionId && loggingFromAssignment;
     if(editingSessionId){
       const s = sessions.find(x=>x.id===editingSessionId);
-      s.focus=focusVal; s.type=typeVal; s.intent=intentVal; s.quality=qualityVal; s.timeMin=timeVal; s.note=$('noteInput').value.trim();
+      s.focus=focusVal; s.type=typeVal; s.quality=qualityVal; s.timeMin=timeVal; s.note=$('noteInput').value.trim();
     } else {
-      sessions.push({ id: Date.now(), date: todayISO(), focus: focusVal, type: typeVal, intent: intentVal, quality: qualityVal, timeMin: timeVal, note: $('noteInput').value.trim() });
+      sessions.push({ id: Date.now(), date: todayISO(), focus: focusVal, type: typeVal, quality: qualityVal, timeMin: timeVal, note: $('noteInput').value.trim() });
     }
     await saveSessions();
     $('logOverlay').classList.remove('show');
@@ -1534,17 +1829,23 @@
   }
 
   let roundCommitVal = null;
+  let roundTypeVal = 'practice';
 
   function openRoundSheet(existing){
     editingRoundId = null;
     roundWeaknessVal = null;
     roundCommitVal = null;
+    roundTypeVal = 'practice';
     weaknessManuallySet = false;
     $('roundScore').value = '';
     $('roundNote').value = '';
+    $('roundTourneyName').value = '';
+    $('roundPlacement').value = '';
     resetTiger5();
     document.querySelectorAll('#roundWeaknessChips .chip').forEach(c=>c.classList.remove('sel'));
     document.querySelectorAll('#commitRow .intent-opt').forEach(c=>c.classList.remove('sel'));
+    document.querySelectorAll('#roundTypeToggle .opt').forEach(c=>c.classList.toggle('sel', c.dataset.v==='practice'));
+    $('tournamentFields').style.display = 'none';
     $('deleteRound').style.display = 'none';
     if(existing){
       editingRoundId = existing.id;
@@ -1552,14 +1853,31 @@
       $('roundNote').value = existing.note||'';
       roundWeaknessVal = existing.weakness || null;
       roundCommitVal = existing.commitment || null;
+      roundTypeVal = existing.isTournament ? 'tournament' : 'practice';
       weaknessManuallySet = true;
       if(existing.tiger5){ tiger5 = Object.assign({doubles:0,bogeyInside150:0,threePutts:0,missedUpDown:0,penalties:0}, existing.tiger5); renderTiger5(); }
       document.querySelectorAll('#roundWeaknessChips .chip').forEach(c=>{ if(c.dataset.v===roundWeaknessVal) c.classList.add('sel'); });
       document.querySelectorAll('#commitRow .intent-opt').forEach(c=>{ if(+c.dataset.v===roundCommitVal) c.classList.add('sel'); });
+      document.querySelectorAll('#roundTypeToggle .opt').forEach(c=>c.classList.toggle('sel', c.dataset.v===roundTypeVal));
+      if(existing.isTournament){
+        $('tournamentFields').style.display = 'block';
+        $('roundTourneyName').value = existing.tournamentName || '';
+        $('roundPlacement').value = existing.placement || '';
+      }
       $('deleteRound').style.display = 'block';
     }
     $('roundOverlay').classList.add('show');
   }
+  document.querySelectorAll('#roundTypeToggle .opt').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('#roundTypeToggle .opt').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel'); roundTypeVal = c.dataset.v;
+      $('tournamentFields').style.display = (roundTypeVal==='tournament') ? 'block' : 'none';
+      if(roundTypeVal==='tournament' && !$('roundTourneyName').value && nextEventName){
+        $('roundTourneyName').value = nextEventName;
+      }
+    });
+  });
   document.querySelectorAll('#roundWeaknessChips .chip').forEach(c=>{
     c.addEventListener('click', ()=>{
       document.querySelectorAll('#roundWeaknessChips .chip').forEach(x=>x.classList.remove('sel'));
@@ -1580,12 +1898,16 @@
     const score = parseInt($('roundScore').value,10);
     if(!score) return;
     const t5total = T5_KEYS.reduce((a,k)=>a+tiger5[k],0);
+    const isTournament = roundTypeVal === 'tournament';
+    const tourneyName = isTournament ? $('roundTourneyName').value.trim() : '';
+    const placement = isTournament ? $('roundPlacement').value.trim() : '';
     if(editingRoundId){
       const r = rounds.find(x=>x.id===editingRoundId);
       r.score = score; r.note = $('roundNote').value.trim(); r.weakness = roundWeaknessVal; r.commitment = roundCommitVal;
       r.tiger5 = Object.assign({}, tiger5); r.tiger5Total = t5total;
+      r.isTournament = isTournament; r.tournamentName = tourneyName; r.placement = placement;
     } else {
-      rounds.push({ id: Date.now(), date: todayISO(), score: score, note: $('roundNote').value.trim(), weakness: roundWeaknessVal, commitment: roundCommitVal, tiger5: Object.assign({}, tiger5), tiger5Total: t5total });
+      rounds.push({ id: Date.now(), date: todayISO(), score: score, note: $('roundNote').value.trim(), weakness: roundWeaknessVal, commitment: roundCommitVal, tiger5: Object.assign({}, tiger5), tiger5Total: t5total, isTournament: isTournament, tournamentName: tourneyName, placement: placement });
     }
     await saveRounds();
     $('roundOverlay').classList.remove('show');
@@ -1595,9 +1917,9 @@
       await saveAssignment();
       await saveAssignFilter();
       renderAssignment();
-      showToast('Round saved. Focus set to '+(WEAKNESS_LABELS[roundWeaknessVal]||roundWeaknessVal)+'.');
+      showToast((isTournament?'Tournament round':'Round')+' saved. Focus set to '+(WEAKNESS_LABELS[roundWeaknessVal]||roundWeaknessVal)+'.');
     } else {
-      showToast('Round saved.');
+      showToast((isTournament?'Tournament round':'Round')+' saved.');
     }
     render();
   });
@@ -1622,6 +1944,87 @@
     T5_KEYS.forEach(k=>{ if(avgs[k] > avgs[worstKey]) worstKey = k; });
     return { withT5, totals, avgs, worstKey, count: withT5.length };
   }
+
+  // ---- Tournament Results ----
+  // Separates real competitive rounds from practice/casual rounds, because
+  // "how you played" and "how you performed under a number that counts" are
+  // different signals — a coach tracks them separately, not blended.
+  function renderTournamentMini(){
+    const card = $('trMiniCard');
+    const tRounds = rounds.filter(r=>r.isTournament);
+    if(!tRounds.length){
+      card.innerHTML = '<div class="t5-empty">Tag a round as \u201CTournament\u201D when you log it to start building your competitive record.</div>';
+      card.onclick = null;
+      return;
+    }
+    const sorted = [...tRounds].sort((a,b)=>b.date.localeCompare(a.date));
+    const latest = sorted[0];
+    const avgScore = (tRounds.reduce((a,r)=>a+r.score,0)/tRounds.length).toFixed(1);
+    const bestScore = Math.min(...tRounds.map(r=>r.score));
+    card.innerHTML =
+      '<div class="tr-mini-top">'+
+        '<div><div class="tr-mini-name">'+tRounds.length+' tournament'+(tRounds.length===1?'':'s')+' logged</div>'+
+        '<div class="tr-mini-sub">avg '+avgScore+' \u00b7 best '+bestScore+' \u00b7 latest: '+escapeHtml(latest.tournamentName||'Tournament')+' ('+latest.score+')</div></div>'+
+        '<div class="tr-mini-arrow">&#8250;</div>'+
+      '</div>';
+    card.onclick = openTournamentResults;
+  }
+
+  function openTournamentResults(){
+    const body = $('trBody');
+    const tRounds = [...rounds].filter(r=>r.isTournament).sort((a,b)=>b.date.localeCompare(a.date));
+    if(!tRounds.length){
+      body.innerHTML = '<div class="t5-empty" style="padding:20px 0;">No tournament rounds logged yet. Tag a round as \u201CTournament\u201D from the round log to start tracking your competitive record.</div>';
+      $('trOverlay').classList.add('show');
+      return;
+    }
+    const avgScore = (tRounds.reduce((a,r)=>a+r.score,0)/tRounds.length).toFixed(1);
+    const bestScore = Math.min(...tRounds.map(r=>r.score));
+    const t5Tagged = tRounds.filter(r=>r.tiger5Total!==undefined && r.tiger5Total!==null);
+    const avgT5 = t5Tagged.length ? (t5Tagged.reduce((a,r)=>a+r.tiger5Total,0)/t5Tagged.length).toFixed(1) : '\u2014';
+    const commitTagged = tRounds.filter(r=>r.commitment);
+    const avgCommit = commitTagged.length ? (commitTagged.reduce((a,r)=>a+r.commitment,0)/commitTagged.length).toFixed(1) : '\u2014';
+
+    let html = '<div class="t5-summary-row">'+
+      '<div class="t5-summary-stat"><div class="num">'+tRounds.length+'</div><div class="lbl">tournaments played</div></div>'+
+      '<div class="t5-summary-stat"><div class="num">'+avgScore+'</div><div class="lbl">avg tournament score</div></div>'+
+      '<div class="t5-summary-stat"><div class="num">'+bestScore+'</div><div class="lbl">best tournament score</div></div>'+
+      '<div class="t5-summary-stat"><div class="num">'+avgT5+'</div><div class="lbl">avg Tiger 5</div></div>'+
+    '</div>';
+
+    if(tRounds.length >= 2){
+      const chronological = [...tRounds].sort((a,b)=>a.date.localeCompare(b.date)).slice(-8);
+      const maxScore = Math.max(...chronological.map(r=>r.score));
+      const minScore = Math.min(...chronological.map(r=>r.score));
+      const range = Math.max(1, maxScore-minScore);
+      html += '<div class="field-label">Tournament score trend (last '+chronological.length+')</div>';
+      html += '<div class="score-spark">'+chronological.map(r=>{
+        const h = Math.max(6, Math.round(((r.score-minScore)/range)*54)+6);
+        return '<div class="score-spark-col"><div class="score-spark-bar" style="height:'+h+'px;"></div><div class="score-spark-lbl">'+r.score+'</div></div>';
+      }).join('')+'</div>';
+    }
+
+    html += '<div class="field-label">Results</div>';
+    html += tRounds.map(r=>{
+      const wkLabel = r.weakness ? (WEAKNESS_LABELS[r.weakness]||r.weakness) : '';
+      const stats = [];
+      if(r.placement) stats.push(r.placement);
+      if(r.tiger5Total!==undefined && r.tiger5Total!==null) stats.push('T5: '+r.tiger5Total);
+      if(r.commitment) stats.push('Commit: '+r.commitment+'/5');
+      if(wkLabel) stats.push('Weak: '+wkLabel);
+      return '<div class="tr-item">'+
+        '<div class="tr-item-top"><div class="tr-item-name">'+escapeHtml(r.tournamentName||'Tournament')+'</div><div class="tr-item-score">'+r.score+'</div></div>'+
+        '<div class="tr-item-meta">'+fmtDate(r.date)+'</div>'+
+        (stats.length ? '<div class="tr-item-stats">'+stats.map(s=>'<span class="tr-item-stat">'+escapeHtml(s)+'</span>').join('')+'</div>' : '')+
+        (r.note ? '<div class="round-note" style="margin-top:6px;">'+escapeHtml(r.note)+'</div>' : '')+
+      '</div>';
+    }).join('');
+
+    body.innerHTML = html;
+    $('trOverlay').classList.add('show');
+  }
+  $('closeTr').addEventListener('click', ()=> $('trOverlay').classList.remove('show'));
+  $('trOverlay').addEventListener('click', e=>{ if(e.target.id==='trOverlay') $('trOverlay').classList.remove('show'); });
 
   function renderT5Mini(){
     const card = $('t5MiniCard');
@@ -1740,29 +2143,33 @@
 
 
   // ---- Drill library accordion ----
-  function renderDrillLibrary(){
-    const body = $('drillAccBody');
+  function renderDrillGroups(body, filterFn, labels){
     let html = '';
     FOCUS_LIST.forEach(f=>{
-      const items = DRILL_POOL.filter(d=>d.focus===f);
+      const items = DRILL_POOL.filter(d=>d.focus===f && filterFn(d));
       if(!items.length) return;
-      html += '<div class="drill-group-title">'+f+'</div>';
+      html += '<div class="drill-group-title">'+((labels && labels[f]) || f)+'</div>';
       items.forEach(d=>{
         html += '<div class="drill-item"><div class="dn">'+d.name+'</div><div class="dt">'+d.text+'</div></div>';
       });
     });
     body.innerHTML = html;
   }
-  $('drillAccHead').addEventListener('click', ()=>{
-    const head = $('drillAccHead'), body = $('drillAccBody');
-    const opening = !body.classList.contains('open');
-    body.classList.toggle('open');
-    head.classList.toggle('open');
-    if(opening && !body.dataset.filled){ renderDrillLibrary(); body.dataset.filled = '1'; }
-  });
+  function wireAccordion(headId, bodyId, filterFn, labels){
+    $(headId).addEventListener('click', ()=>{
+      const head = $(headId), body = $(bodyId);
+      const opening = !body.classList.contains('open');
+      body.classList.toggle('open');
+      head.classList.toggle('open');
+      if(opening && !body.dataset.filled){ renderDrillGroups(body, filterFn, labels); body.dataset.filled = '1'; }
+    });
+  }
+  wireAccordion('indoorAccHead','indoorAccBody', d=>d.indoor, { 'Full Swing':'Full Swing \u2014 active drills', 'Putting':'Putting \u2014 short putts, mechanics', 'Speed':'Speed \u2014 RYP stick workout' });
+  wireAccordion('drillAccHead','drillAccBody', d=>!d.indoorOnly, null);
 
   async function init(){
     await loadEvent();
+    await loadIndoor();
     await loadAll();
     await loadAssignment();
   }
